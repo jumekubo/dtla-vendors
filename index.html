@@ -85,16 +85,16 @@
 
 <main>
   <div class="toolbar">
-    <input type="search" id="q" placeholder="Search name, brand, item, address, notes…" oninput="render()">
-    <select id="fCat" onchange="render()"><option value="">All categories</option></select>
-    <select id="fWs" onchange="render()">
+    <input type="search" id="q" placeholder="Search name, brand, item, address, notes…" oninput="render()" autocomplete="off">
+    <select id="fCat" onchange="render()" autocomplete="off"><option value="">All categories</option></select>
+    <select id="fWs" onchange="render()" autocomplete="off">
       <option value="">Wholesale: any</option>
       <option>Wholesale only</option>
       <option>Wholesale + Retail</option>
       <option>Retail only</option>
       <option>Unknown</option>
     </select>
-    <select id="fStatus" onchange="render()">
+    <select id="fStatus" onchange="render()" autocomplete="off">
       <option value="">Status: any</option>
       <option value="active">Active</option>
       <option value="unverified">Unverified</option>
@@ -242,6 +242,12 @@ function init() {
   const catSel = document.getElementById('fCat'), eCat = document.getElementById('e_category');
   catSel.length = 1; eCat.length = 0;
   (DB.meta.categories || []).forEach(c => { catSel.add(new Option(c, c)); eCat.add(new Option(c, c)); });
+  // Reset filters on every load — some browsers restore stale form values
+  // after reload without firing events, silently filtering everything out.
+  document.getElementById('q').value = '';
+  catSel.value = '';
+  document.getElementById('fWs').value = '';
+  document.getElementById('fStatus').value = '';
   render();
 }
 
