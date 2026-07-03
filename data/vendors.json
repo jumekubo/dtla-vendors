@@ -1904,23 +1904,23 @@
       "category": "Services",
       "address": "1301 S Main St #102, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
-      "email": "",
+      "phone": "213-718-2129",
+      "email": "visionstitchla@gmail.com",
       "website": "",
-      "instagram": "",
-      "contact_person": "",
+      "instagram": "visionstitch",
+      "contact_person": "Josh",
       "wholesale": "Unknown",
       "resale_permit_required": false,
-      "min_order": "",
+      "min_order": "1",
       "brands": [],
       "items": [
         "Embroidery services",
         "Caps"
       ],
-      "hours": "",
+      "hours": "Mon-Fri 9am-5pm",
       "price_notes": "",
       "parking_notes": "",
-      "rating": 0,
+      "rating": 5,
       "tags": [
         "embroidery",
         "John's regular vendor"
@@ -1928,7 +1928,8 @@
       "notes": "GVD regular vendor. Embroidery and cap services in the Fashion District.",
       "status": "active",
       "last_verified": "2026-07-02",
-      "added": "2026-07-02"
+      "added": "2026-07-02",
+      "updated": "2026-07-03"
     },
     {
       "id": "3a-thread-supply",
