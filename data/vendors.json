@@ -1886,7 +1886,7 @@
       "hours": "Mon-Fri 9am-5pm, Sat 12pm-2pm",
       "price_notes": "",
       "parking_notes": "",
-      "rating": 0,
+      "rating": 5,
       "tags": [
         "DTF",
         "UV DTF",
@@ -1896,7 +1896,8 @@
       "notes": "GVD regular vendor. Family-owned print shop; DTF transfers and UV DTF stickers pair well with your heat press and UV printing work.",
       "status": "active",
       "last_verified": "2026-07-02",
-      "added": "2026-07-02"
+      "added": "2026-07-02",
+      "updated": "2026-07-03"
     },
     {
       "id": "vision-stitch",
@@ -1925,7 +1926,7 @@
         "embroidery",
         "John's regular vendor"
       ],
-      "notes": "GVD regular vendor. Embroidery and cap services in the Fashion District.",
+      "notes": "GVD regular vendor. Embroidery and cap services in the Fashion District. Used for Arbonne embroidered hats in 2025",
       "status": "active",
       "last_verified": "2026-07-02",
       "added": "2026-07-02",
