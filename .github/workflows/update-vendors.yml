@@ -1,0 +1,42 @@
+name: Update vendor info from web
+
+on:
+  workflow_dispatch:        # triggered by the "Run auto-research" button in the app
+  schedule:
+    - cron: "0 15 1 * *"    # also runs 1st of each month, 8am PT (delete if unwanted)
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Research vendors with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/update_vendors.py
+
+      - name: Read summary for PR body
+        id: summary
+        run: |
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          cat research_summary.md >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          rm -f research_summary.md
+
+      - name: Open pull request with changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Auto-research: update vendor info"
+          title: "Vendor info updates from web research"
+          body: ${{ steps.summary.outputs.body }}
+          branch: auto-research
+          delete-branch: true
