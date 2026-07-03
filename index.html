@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTLA Vendor Tracker — Good Vibe Design</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --ink: #22252a; --muted: #6b7280;
+    --accent: #e07a3f; --accent-dark: #c9622a; --green: #2e7d52; --red: #c0392b;
+    --amber: #b8860b; --border: #e2ded4; --shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+  header { background: var(--ink); color: #fff; padding: 16px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
+  header h1 span { color: var(--accent); }
+  header .sub { font-size: .78rem; color: #b8bcc4; }
+  .spacer { flex: 1; }
+  .btn { border: none; border-radius: 8px; padding: 9px 14px; font-size: .85rem; font-weight: 600; cursor: pointer; background: #3a3f47; color: #fff; transition: background .15s; }
+  .btn:hover { background: #4a5058; }
+  .btn.primary { background: var(--accent); }
+  .btn.primary:hover { background: var(--accent-dark); }
+  .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn.ghost:hover { background: #eee9df; }
+  .btn.danger { background: var(--red); }
+  .btn.small { padding: 5px 10px; font-size: .75rem; }
+  main { max-width: 1200px; margin: 0 auto; padding: 20px 24px 80px; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
+  .toolbar input[type=search] { flex: 1; min-width: 220px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; background: var(--card); }
+  .toolbar select { padding: 10px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: .85rem; background: var(--card); color: var(--ink); }
+  .stats { font-size: .8rem; color: var(--muted); margin-bottom: 12px; }
+  .dirty { color: var(--amber); font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; }
+  .card h3 { font-size: 1rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: .65rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+  .badge.cat { background: #eee9df; color: #7a6a4f; }
+  .badge.ws-only { background: #ddeee4; color: var(--green); }
+  .badge.ws-retail { background: #e4ecf7; color: #2c5d8f; }
+  .badge.retail { background: #f3e6e0; color: #a3552f; }
+  .badge.unknown { background: #eceff1; color: #78909c; }
+  .badge.unverified { background: #fdf3d7; color: var(--amber); }
+  .badge.closed { background: #fbe4e0; color: var(--red); }
+  .card .row { font-size: .82rem; color: var(--muted); display: flex; gap: 6px; align-items: baseline; }
+  .card .row b { color: var(--ink); font-weight: 600; min-width: 62px; display: inline-block; }
+  .card .brands span, .card .items span { display: inline-block; background: #f0ede5; border-radius: 6px; padding: 2px 7px; font-size: .72rem; margin: 2px 3px 0 0; color: #55503f; }
+  .card .notes { font-size: .8rem; color: var(--muted); font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px; }
+  .card .actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
+  .stars { color: var(--accent); font-size: .8rem; letter-spacing: 2px; }
+  a { color: #2c5d8f; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  dialog { border: none; border-radius: 14px; padding: 0; max-width: 640px; width: 92vw; max-height: 88vh; box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+  dialog::backdrop { background: rgba(20,22,26,.5); }
+  .dlg-head { padding: 16px 20px; background: var(--ink); color: #fff; font-weight: 700; display: flex; align-items: center; }
+  .dlg-body { padding: 18px 20px; overflow-y: auto; max-height: calc(88vh - 130px); }
+  .dlg-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; background: #faf8f4; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: block; margin-bottom: 4px; }
+  .form-grid input, .form-grid select, .form-grid textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: .87rem; font-family: inherit; background: #fff; }
+  textarea { resize: vertical; min-height: 60px; }
+  .hint { font-size: .72rem; color: var(--muted); margin-top: 3px; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 10px; font-size: .85rem; box-shadow: 0 6px 24px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 99; max-width: 90vw; }
+  .toast.show { opacity: 1; }
+  .toast.err { background: var(--red); }
+  .empty { text-align: center; color: var(--muted); padding: 60px 20px; font-size: .95rem; }
+  code { background: #eee9df; padding: 1px 6px; border-radius: 5px; font-size: .8em; }
+  .settings-note { font-size: .8rem; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+  @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>DTLA <span>Vendor Tracker</span></h1>
+    <div class="sub">Good Vibe Design — Fashion District &amp; beyond</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn primary" onclick="openEditor()">+ Add Vendor</button>
+  <button class="btn" onclick="openRefresh()">&#8635; Update from Web</button>
+  <button class="btn" id="saveBtn" onclick="saveToGitHub()">Save Changes</button>
+  <button class="btn ghost" onclick="openSettings()" style="color:#b8bcc4">&#9881; Settings</button>
+</header>
+
+<main>
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="Search name, brand, item, address, notes…" oninput="render()">
+    <select id="fCat" onchange="render()"><option value="">All categories</option></select>
+    <select id="fWs" onchange="render()">
+      <option value="">Wholesale: any</option>
+      <option>Wholesale only</option>
+      <option>Wholesale + Retail</option>
+      <option>Retail only</option>
+      <option>Unknown</option>
+    </select>
+    <select id="fStatus" onchange="render()">
+      <option value="">Status: any</option>
+      <option value="active">Active</option>
+      <option value="unverified">Unverified</option>
+      <option value="closed">Closed</option>
+    </select>
+    <button class="btn ghost small" onclick="exportJSON()">Export</button>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- Editor dialog -->
+<dialog id="editorDlg">
+  <div class="dlg-head" id="editorTitle">Add Vendor</div>
+  <div class="dlg-body">
+    <div class="form-grid">
+      <div class="full"><label>Name *</label><input id="e_name"></div>
+      <div><label>Category</label><select id="e_category"></select></div>
+      <div><label>Status</label><select id="e_status"><option value="active">Active</option><option value="unverified">Unverified</option><option value="closed">Closed</option></select></div>
+      <div class="full"><label>Address</label><input id="e_address"></div>
+      <div><label>Neighborhood</label><input id="e_neighborhood" placeholder="Fashion District, Santee Alley…"></div>
+      <div><label>Phone</label><input id="e_phone"></div>
+      <div><label>Email</label><input id="e_email"></div>
+      <div><label>Website</label><input id="e_website" placeholder="https://…"></div>
+      <div><label>Instagram</label><input id="e_instagram" placeholder="handle (no @)"></div>
+      <div><label>Contact person</label><input id="e_contact_person"></div>
+      <div><label>Wholesale</label><select id="e_wholesale"><option>Wholesale only</option><option>Wholesale + Retail</option><option>Retail only</option><option>Unknown</option></select></div>
+      <div><label>Resale permit required?</label><select id="e_permit"><option value="false">No / not required</option><option value="true">Yes</option></select></div>
+      <div><label>Minimum order</label><input id="e_min_order" placeholder="e.g. 12 pcs per style"></div>
+      <div><label>Hours</label><input id="e_hours"></div>
+      <div class="full"><label>Brands carried (comma-separated)</label><input id="e_brands" placeholder="Bella+Canvas, Gildan, Comfort Colors"></div>
+      <div class="full"><label>Items sold (comma-separated)</label><input id="e_items" placeholder="T-shirts, Hoodies, Caps"></div>
+      <div class="full"><label>Tags (comma-separated)</label><input id="e_tags" placeholder="Siser HTV, embroidery, industry only"></div>
+      <div><label>Price notes</label><input id="e_price_notes"></div>
+      <div><label>Parking notes</label><input id="e_parking_notes"></div>
+      <div><label>My rating (0-5)</label><input id="e_rating" type="number" min="0" max="5" step="1"></div>
+      <div><label>Last verified</label><input id="e_last_verified" type="date"></div>
+      <div class="full"><label>Notes</label><textarea id="e_notes"></textarea></div>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn danger" id="deleteBtn" onclick="deleteVendor()" style="margin-right:auto">Delete</button>
+    <button class="btn ghost" onclick="editorDlg.close()">Cancel</button>
+    <button class="btn primary" onclick="saveVendor()">Save Vendor</button>
+  </div>
+</dialog>
+
+<!-- Settings dialog -->
+<dialog id="settingsDlg">
+  <div class="dlg-head">Settings — GitHub connection</div>
+  <div class="dlg-body">
+    <p class="settings-note">
+      To save edits back to the repo (and trigger the auto-update workflow), paste a GitHub
+      <b>fine-grained personal access token</b> scoped to this repository with
+      <code>Contents: Read &amp; write</code> and <code>Actions: Read &amp; write</code> permissions.
+      Create one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">github.com/settings/personal-access-tokens/new</a>.
+      The token is stored only in this browser (localStorage), never in the repo.
+    </p>
+    <div class="form-grid">
+      <div><label>GitHub owner</label><input id="s_owner"></div>
+      <div><label>Repository</label><input id="s_repo"></div>
+      <div class="full"><label>Personal access token</label><input id="s_token" type="password" placeholder="github_pat_…"></div>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn ghost" onclick="settingsDlg.close()">Cancel</button>
+    <button class="btn primary" onclick="saveSettings()">Save Settings</button>
+  </div>
+</dialog>
+
+<!-- Refresh dialog -->
+<dialog id="refreshDlg">
+  <div class="dlg-head">Update vendor info from the web</div>
+  <div class="dlg-body">
+    <p class="settings-note">
+      <b>Option A — Automatic (recommended once set up).</b> Triggers a GitHub Action that researches every
+      vendor online using Google Gemini's free API (checks phone numbers, addresses, hours, brands carried,
+      whether they've closed) and opens a <b>pull request</b> with proposed changes for you to review and merge.
+      Requires the <code>GEMINI_API_KEY</code> repo secret and a token in Settings.
+    </p>
+    <button class="btn primary" onclick="triggerWorkflow()" style="width:100%">&#9889; Run auto-research now</button>
+    <p class="settings-note" style="margin-top:18px">
+      <b>Option B — Via Claude.</b> Copies a ready-made research prompt (including your current vendor data)
+      to the clipboard. Paste it into a Claude / Cowork session and Claude will research and hand back an
+      updated <code>vendors.json</code>.
+    </p>
+    <button class="btn" onclick="copyResearchPrompt()" style="width:100%">&#128203; Copy research prompt for Claude</button>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn ghost" onclick="refreshDlg.close()">Close</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA_PATH = 'data/vendors.json';
+let DB = { meta: { categories: [] }, vendors: [] };
+let fileSha = null;
+let dirty = false;
+let editingId = null;
+
+// ---------- config ----------
+function detectRepo() {
+  // On GitHub Pages: https://OWNER.github.io/REPO/
+  const h = location.hostname, p = location.pathname.split('/').filter(Boolean);
+  if (h.endsWith('.github.io') && p.length) return { owner: h.split('.')[0], repo: p[0] };
+  return { owner: '', repo: '' };
+}
+function cfg() {
+  const d = detectRepo();
+  return {
+    owner: localStorage.getItem('gh_owner') || d.owner,
+    repo: localStorage.getItem('gh_repo') || d.repo,
+    token: localStorage.getItem('gh_token') || ''
+  };
+}
+
+// ---------- load ----------
+async function load() {
+  try {
+    const c = cfg();
+    // Prefer the GitHub API when configured, so we always have the latest sha
+    if (c.owner && c.repo) {
+      try {
+        const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${DATA_PATH}?ref=main`, {
+          headers: c.token ? { Authorization: `Bearer ${c.token}` } : {}
+        });
+        if (r.ok) {
+          const j = await r.json();
+          fileSha = j.sha;
+          DB = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), ch => ch.charCodeAt(0))));
+          init(); return;
+        }
+      } catch (e) { /* fall through to relative fetch */ }
+    }
+    const r = await fetch(DATA_PATH + '?t=' + Date.now());
+    DB = await r.json();
+    init();
+  } catch (e) {
+    document.getElementById('grid').innerHTML = '<div class="empty">Could not load data/vendors.json — if you opened this file directly, run a local server (e.g. <code>python3 -m http.server</code>) or use the GitHub Pages URL.</div>';
+  }
+}
+function init() {
+  const catSel = document.getElementById('fCat'), eCat = document.getElementById('e_category');
+  catSel.length = 1; eCat.length = 0;
+  (DB.meta.categories || []).forEach(c => { catSel.add(new Option(c, c)); eCat.add(new Option(c, c)); });
+  render();
+}
+
+// ---------- render ----------
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function wsBadge(w) {
+  const map = { 'Wholesale only': 'ws-only', 'Wholesale + Retail': 'ws-retail', 'Retail only': 'retail' };
+  return `<span class="badge ${map[w] || 'unknown'}">${esc(w || 'Unknown')}</span>`;
+}
+function render() {
+  const q = document.getElementById('q').value.toLowerCase().trim();
+  const fc = document.getElementById('fCat').value, fw = document.getElementById('fWs').value, fs = document.getElementById('fStatus').value;
+  const list = DB.vendors.filter(v => {
+    if (fc && v.category !== fc) return false;
+    if (fw && (v.wholesale || 'Unknown') !== fw) return false;
+    if (fs && (v.status || 'active') !== fs) return false;
+    if (!q) return true;
+    const hay = [v.name, v.address, v.neighborhood, v.phone, v.notes, v.category,
+      ...(v.brands||[]), ...(v.items||[]), ...(v.tags||[])].join(' ').toLowerCase();
+    return hay.includes(q);
+  }).sort((a,b) => a.name.localeCompare(b.name));
+
+  document.getElementById('stats').innerHTML =
+    `${list.length} of ${DB.vendors.length} vendors` + (dirty ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
+
+  const grid = document.getElementById('grid');
+  if (!list.length) { grid.innerHTML = '<div class="empty">No vendors match. Add one with “+ Add Vendor”.</div>'; return; }
+  grid.innerHTML = list.map(v => `
+    <div class="card">
+      <h3>${esc(v.name)}
+        <span class="badge cat">${esc(v.category || 'Other')}</span>
+        ${wsBadge(v.wholesale)}
+        ${v.status === 'unverified' ? '<span class="badge unverified">unverified</span>' : ''}
+        ${v.status === 'closed' ? '<span class="badge closed">closed</span>' : ''}
+      </h3>
+      ${v.rating ? `<div class="stars">${'★'.repeat(v.rating)}${'☆'.repeat(5-v.rating)}</div>` : ''}
+      ${v.address ? `<div class="row"><b>Address</b> <span>${esc(v.address)}${v.address && !v.address.includes('unverified') ? ` — <a href="https://maps.google.com/?q=${encodeURIComponent(v.address)}" target="_blank">map</a>` : ''}</span></div>` : ''}
+      ${v.phone ? `<div class="row"><b>Phone</b> <a href="tel:${esc(v.phone)}">${esc(v.phone)}</a></div>` : ''}
+      ${v.email ? `<div class="row"><b>Email</b> <a href="mailto:${esc(v.email)}">${esc(v.email)}</a></div>` : ''}
+      ${v.website ? `<div class="row"><b>Web</b> <a href="${esc(v.website)}" target="_blank">${esc(v.website.replace(/^https?:\/\//,''))}</a></div>` : ''}
+      ${v.instagram ? `<div class="row"><b>IG</b> <a href="https://instagram.com/${esc(v.instagram)}" target="_blank">@${esc(v.instagram)}</a></div>` : ''}
+      ${v.hours ? `<div class="row"><b>Hours</b> <span>${esc(v.hours)}</span></div>` : ''}
+      ${v.min_order ? `<div class="row"><b>Min order</b> <span>${esc(v.min_order)}</span></div>` : ''}
+      ${(v.brands||[]).length ? `<div class="row brands"><b>Brands</b> <span style="min-width:0">${v.brands.map(b=>`<span>${esc(b)}</span>`).join('')}</span></div>` : ''}
+      ${(v.items||[]).length ? `<div class="row items"><b>Items</b> <span style="min-width:0">${v.items.map(i=>`<span>${esc(i)}</span>`).join('')}</span></div>` : ''}
+      ${v.notes ? `<div class="notes">${esc(v.notes)}</div>` : ''}
+      <div class="actions">
+        <button class="btn ghost small" onclick="openEditor('${esc(v.id)}')">Edit</button>
+        ${v.last_verified ? `<span style="margin-left:auto;font-size:.7rem;color:var(--muted)">verified ${esc(v.last_verified)}</span>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ---------- editor ----------
+const F = ['name','address','neighborhood','phone','email','website','instagram','contact_person','min_order','hours','price_notes','parking_notes','notes','last_verified'];
+function openEditor(id) {
+  editingId = id || null;
+  const v = id ? DB.vendors.find(x => x.id === id) : {};
+  document.getElementById('editorTitle').textContent = id ? `Edit — ${v.name}` : 'Add Vendor';
+  document.getElementById('deleteBtn').style.display = id ? '' : 'none';
+  F.forEach(f => document.getElementById('e_' + f).value = v[f] || '');
+  document.getElementById('e_category').value = v.category || (DB.meta.categories||[])[0] || '';
+  document.getElementById('e_status').value = v.status || 'active';
+  document.getElementById('e_wholesale').value = v.wholesale || 'Unknown';
+  document.getElementById('e_permit').value = String(!!v.resale_permit_required);
+  document.getElementById('e_rating').value = v.rating || 0;
+  document.getElementById('e_brands').value = (v.brands||[]).join(', ');
+  document.getElementById('e_items').value = (v.items||[]).join(', ');
+  document.getElementById('e_tags').value = (v.tags||[]).join(', ');
+  editorDlg.showModal();
+}
+function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60); }
+function csv(id) { return document.getElementById(id).value.split(',').map(s=>s.trim()).filter(Boolean); }
+function saveVendor() {
+  const name = document.getElementById('e_name').value.trim();
+  if (!name) { toast('Name is required', true); return; }
+  const today = new Date().toISOString().slice(0,10);
+  let v = editingId ? DB.vendors.find(x => x.id === editingId) : null;
+  if (!v) {
+    v = { id: slug(name) || 'vendor-' + Date.now(), added: today };
+    while (DB.vendors.some(x => x.id === v.id)) v.id += '-2';
+    DB.vendors.push(v);
+  }
+  F.forEach(f => v[f] = document.getElementById('e_' + f).value.trim());
+  v.category = document.getElementById('e_category').value;
+  v.status = document.getElementById('e_status').value;
+  v.wholesale = document.getElementById('e_wholesale').value;
+  v.resale_permit_required = document.getElementById('e_permit').value === 'true';
+  v.rating = Math.max(0, Math.min(5, parseInt(document.getElementById('e_rating').value) || 0));
+  v.brands = csv('e_brands'); v.items = csv('e_items'); v.tags = csv('e_tags');
+  v.updated = today;
+  dirty = true; editorDlg.close(); render();
+  toast('Vendor saved locally — click "Save Changes" to commit to GitHub');
+}
+function deleteVendor() {
+  const v = DB.vendors.find(x => x.id === editingId);
+  if (!v || !confirm(`Delete "${v.name}"? This can be undone before you hit Save Changes.`)) return;
+  DB.vendors = DB.vendors.filter(x => x.id !== editingId);
+  dirty = true; editorDlg.close(); render();
+  toast('Vendor removed — click "Save Changes" to commit');
+}
+
+// ---------- persistence ----------
+function b64encode(str) {
+  return btoa(String.fromCharCode(...new TextEncoder().encode(str)));
+}
+async function saveToGitHub() {
+  const c = cfg();
+  if (!c.token || !c.owner || !c.repo) { openSettings(); toast('Add your GitHub token in Settings first', true); return; }
+  if (!dirty && !confirm('No unsaved changes detected. Commit anyway?')) return;
+  const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    DB.meta.updated = new Date().toISOString().slice(0,10);
+    const url = `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${DATA_PATH}`;
+    // refresh sha in case the file changed since load
+    const cur = await fetch(url + '?ref=main', { headers: { Authorization: `Bearer ${c.token}` } });
+    if (cur.ok) fileSha = (await cur.json()).sha;
+    const body = {
+      message: `Update vendors (${DB.vendors.length} entries) via tracker UI`,
+      content: b64encode(JSON.stringify(DB, null, 2) + '\n'),
+      branch: 'main'
+    };
+    if (fileSha) body.sha = fileSha;
+    const r = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${c.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error((await r.json()).message || r.status);
+    fileSha = (await r.json()).content.sha;
+    dirty = false; render();
+    toast('Saved to GitHub ✓ (Pages may take ~1 min to reflect changes)');
+  } catch (e) {
+    toast('Save failed: ' + e.message, true);
+  } finally { btn.disabled = false; btn.textContent = 'Save Changes'; }
+}
+function exportJSON() {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(DB, null, 2)], { type: 'application/json' }));
+  a.download = 'vendors.json'; a.click();
+}
+
+// ---------- settings ----------
+function openSettings() {
+  const c = cfg();
+  document.getElementById('s_owner').value = c.owner;
+  document.getElementById('s_repo').value = c.repo;
+  document.getElementById('s_token').value = c.token;
+  settingsDlg.showModal();
+}
+function saveSettings() {
+  localStorage.setItem('gh_owner', document.getElementById('s_owner').value.trim());
+  localStorage.setItem('gh_repo', document.getElementById('s_repo').value.trim());
+  localStorage.setItem('gh_token', document.getElementById('s_token').value.trim());
+  settingsDlg.close(); toast('Settings saved (stored only in this browser)');
+}
+
+// ---------- refresh from web ----------
+function openRefresh() { refreshDlg.showModal(); }
+async function triggerWorkflow() {
+  const c = cfg();
+  if (!c.token || !c.owner || !c.repo) { refreshDlg.close(); openSettings(); toast('Add your GitHub token in Settings first', true); return; }
+  try {
+    const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/actions/workflows/update-vendors.yml/dispatches`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${c.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: 'main' })
+    });
+    if (r.status === 204) {
+      refreshDlg.close();
+      toast('Research started ✓ — a pull request will appear in a few minutes if changes are found');
+      setTimeout(() => window.open(`https://github.com/${c.owner}/${c.repo}/actions`, '_blank'), 800);
+    } else {
+      const j = await r.json().catch(() => ({}));
+      throw new Error(j.message || `HTTP ${r.status}`);
+    }
+  } catch (e) { toast('Could not start workflow: ' + e.message, true); }
+}
+function copyResearchPrompt() {
+  const prompt = `You are updating a vendor database for Good Vibe Design (custom apparel decoration, Los Angeles). For each vendor below, research current information online: verify the address, phone number, website, and business hours; check whether the business is still open; and look for updates on brands carried (e.g. "now carries Bella+Canvas"), wholesale policy, and minimum orders. Fill in any fields marked "unverified" or empty where possible.
+
+Return the COMPLETE updated JSON in exactly the same schema, changing only fields where you found reliable new information. Set "last_verified" to today's date for every vendor you checked, and set "status" to "active", "unverified", or "closed" accordingly. Note what changed in a short summary before the JSON.
+
+Current data:
+` + JSON.stringify(DB, null, 2);
+  navigator.clipboard.writeText(prompt).then(
+    () => toast('Research prompt copied — paste it to Claude'),
+    () => toast('Copy failed — use Export instead', true)
+  );
+}
+
+// ---------- misc ----------
+let toastTimer;
+function toast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = 'toast', 4200);
+}
+window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+load();
+</script>
+</body>
+</html>
