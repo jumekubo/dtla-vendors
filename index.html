@@ -227,7 +227,8 @@ async function load() {
     // Prefer the GitHub API when configured, so we always have the latest sha
     if (c.owner && c.repo) {
       try {
-        const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${DATA_PATH}?ref=main`, {
+        const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${DATA_PATH}?ref=main&t=${Date.now()}`, {
+          cache: 'no-store',
           headers: c.token ? { Authorization: `Bearer ${c.token}` } : {}
         });
         if (r.ok) {
@@ -377,18 +378,28 @@ async function saveToGitHub() {
   try {
     DB.meta.updated = new Date().toISOString().slice(0,10);
     const url = `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${DATA_PATH}`;
-    // refresh sha in case the file changed since load
-    const cur = await fetch(url + '?ref=main', { headers: { Authorization: `Bearer ${c.token}` } });
-    if (cur.ok) fileSha = (await cur.json()).sha;
-    const body = {
-      message: `Update vendors (${DB.vendors.length} entries) via tracker UI`,
-      content: b64encode(JSON.stringify(DB, null, 2) + '\n'),
-      branch: 'main'
-    };
-    if (fileSha) body.sha = fileSha;
-    const r = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${c.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (!r.ok) throw new Error((await r.json()).message || r.status);
-    fileSha = (await r.json()).content.sha;
+    let saved = false;
+    for (let attempt = 0; attempt < 2 && !saved; attempt++) {
+      // Always fetch a FRESH sha (bypass the browser's 60s API cache) —
+      // a stale sha makes GitHub reject the save with a "does not match" error.
+      const cur = await fetch(url + '?ref=main&t=' + Date.now(), { cache: 'no-store', headers: { Authorization: `Bearer ${c.token}` } });
+      if (cur.ok) fileSha = (await cur.json()).sha;
+      const body = {
+        message: `Update vendors (${DB.vendors.length} entries) via tracker UI`,
+        content: b64encode(JSON.stringify(DB, null, 2) + '\n'),
+        branch: 'main'
+      };
+      if (fileSha) body.sha = fileSha;
+      const r = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${c.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (r.ok) {
+        fileSha = (await r.json()).content.sha;
+        saved = true;
+      } else {
+        const j = await r.json().catch(() => ({}));
+        if (r.status === 409 && attempt === 0) continue; // stale version — retry once with fresh sha
+        throw new Error(j.message || r.status);
+      }
+    }
     dirty = false; render();
     toast('Saved to GitHub ✓ (Pages may take ~1 min to reflect changes)');
   } catch (e) {
