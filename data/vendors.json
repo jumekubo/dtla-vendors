@@ -419,6 +419,57 @@
       "added": "2026-07-02"
     },
     {
+      "id": "one-stop-t-shirt-warehouse",
+      "name": "One Stop T-Shirt Warehouse",
+      "category": "Blank Apparel",
+      "address": "1320 Main St #1, Los Angeles, CA 90015",
+      "neighborhood": "Fashion District",
+      "phone": "(213) 747-7600",
+      "email": "onestop1320@gmail.com",
+      "website": "https://onestoptshirt.com",
+      "instagram": "onestoptshirts",
+      "contact_person": "",
+      "wholesale": "Wholesale + Retail",
+      "resale_permit_required": false,
+      "min_order": "",
+      "brands": [
+        "Gildan",
+        "Bella+Canvas",
+        "Comfort Colors",
+        "Next Level",
+        "Suna",
+        "C2 Performance",
+        "PlayeryTees",
+        "Three Layer",
+        "True Crest",
+        "Q-Tees"
+      ],
+      "items": [
+        "T-shirts",
+        "Hoodies",
+        "Fleece",
+        "Kids",
+        "Ladies",
+        "Tote bags",
+        "Aprons",
+        "Safety wear"
+      ],
+      "hours": "",
+      "price_notes": "e.g. Gildan 5000 from $4, Comfort Colors 1717 from $9",
+      "parking_notes": "",
+      "rating": 0,
+      "tags": [
+        "screen printing",
+        "embroidery",
+        "next-day shipping",
+        "John's regular vendor"
+      ],
+      "notes": "GVD regular vendor. Wholesale blanks storefront + in-house screen printing and embroidery. New Shopify site with online wholesale accounts.",
+      "status": "active",
+      "last_verified": "2026-07-02",
+      "added": "2026-07-02"
+    },
+    {
       "id": "pnp-sports-wear",
       "name": "PNP Sports Wear",
       "category": "Blank Apparel",
@@ -1811,6 +1862,43 @@
       "added": "2026-07-02"
     },
     {
+      "id": "the-purrinting-company",
+      "name": "The Purrinting Company",
+      "category": "Services",
+      "address": "1252A Main St, Los Angeles, CA 90015",
+      "neighborhood": "Fashion District",
+      "phone": "(310) 658-0755",
+      "email": "",
+      "website": "https://thepurrintingcompany.store",
+      "instagram": "thepurrintingcompanyllc",
+      "contact_person": "",
+      "wholesale": "Wholesale + Retail",
+      "resale_permit_required": false,
+      "min_order": "",
+      "brands": [],
+      "items": [
+        "DTF transfers",
+        "UV DTF stickers",
+        "Sublimation printing",
+        "Business cards",
+        "Marketing materials"
+      ],
+      "hours": "Mon-Fri 9am-5pm, Sat 12pm-2pm",
+      "price_notes": "",
+      "parking_notes": "",
+      "rating": 0,
+      "tags": [
+        "DTF",
+        "UV DTF",
+        "sublimation",
+        "John's regular vendor"
+      ],
+      "notes": "GVD regular vendor. Family-owned print shop; DTF transfers and UV DTF stickers pair well with your heat press and UV printing work.",
+      "status": "active",
+      "last_verified": "2026-07-02",
+      "added": "2026-07-02"
+    },
+    {
       "id": "vision-stitch",
       "name": "Vision Stitch",
       "category": "Services",
@@ -1834,11 +1922,12 @@
       "parking_notes": "",
       "rating": 0,
       "tags": [
-        "embroidery"
+        "embroidery",
+        "John's regular vendor"
       ],
-      "notes": "Embroidery/cap services; details need verification.",
-      "status": "unverified",
-      "last_verified": "",
+      "notes": "GVD regular vendor. Embroidery and cap services in the Fashion District.",
+      "status": "active",
+      "last_verified": "2026-07-02",
       "added": "2026-07-02"
     },
     {
