@@ -85,7 +85,7 @@
 
 <main>
   <div class="toolbar">
-    <input type="search" id="q" placeholder="Search name, brand, item, address, notes…" oninput="render()" autocomplete="off">
+    <input type="search" id="q" name="vendor-filter-nofill" placeholder="Search name, brand, item, address, notes…" oninput="render()" autocomplete="off">
     <select id="fCat" onchange="render()" autocomplete="off"><option value="">All categories</option></select>
     <select id="fWs" onchange="render()" autocomplete="off">
       <option value="">Wholesale: any</option>
@@ -154,9 +154,9 @@
       The token is stored only in this browser (localStorage), never in the repo.
     </p>
     <div class="form-grid">
-      <div><label>GitHub owner</label><input id="s_owner"></div>
-      <div><label>Repository</label><input id="s_repo"></div>
-      <div class="full"><label>Personal access token</label><input id="s_token" type="password" placeholder="github_pat_…"></div>
+      <div><label>GitHub owner</label><input id="s_owner" autocomplete="off"></div>
+      <div><label>Repository</label><input id="s_repo" autocomplete="off"></div>
+      <div class="full"><label>Personal access token</label><input id="s_token" type="password" placeholder="github_pat_…" autocomplete="off"></div>
     </div>
   </div>
   <div class="dlg-foot">
@@ -257,8 +257,13 @@ function wsBadge(w) {
   const map = { 'Wholesale only': 'ws-only', 'Wholesale + Retail': 'ws-retail', 'Retail only': 'retail' };
   return `<span class="badge ${map[w] || 'unknown'}">${esc(w || 'Unknown')}</span>`;
 }
+let qUserTyped = false;
 function render() {
-  const q = document.getElementById('q').value.toLowerCase().trim();
+  const qEl = document.getElementById('q');
+  // Autofill injects text without the field being focused or the user typing.
+  // Only honor search text once the user has actually typed in the field.
+  if (qEl.value && !qUserTyped && document.activeElement !== qEl) qEl.value = '';
+  const q = qEl.value.toLowerCase().trim();
   const fc = document.getElementById('fCat').value, fw = document.getElementById('fWs').value, fs = document.getElementById('fStatus').value;
   const list = DB.vendors.filter(v => {
     if (fc && v.category !== fc) return false;
@@ -442,6 +447,9 @@ function toast(msg, err) {
   t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = 'toast', 4200);
 }
+document.getElementById('q').addEventListener('input', e => {
+  if (document.activeElement === e.target) qUserTyped = true;
+});
 window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 load();
 </script>
