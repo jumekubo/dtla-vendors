@@ -36,6 +36,10 @@ No Gemini key? Use the button's second option — **Copy research prompt for Cla
 - **Export** downloads a JSON backup.
 - Vendors marked **unverified** have gaps the auto-research can likely fill.
 
+## Price book
+
+Click **$ Price Book** in the toolbar to switch views. Each item (e.g. "Gildan 5000") lists what every vendor charges, sorted cheapest first — the lowest price gets a **BEST** badge once an item has two or more vendor prices. Use **+ Add Item** for new blanks, or **Edit** on an item to add another vendor's price (vendor, low/high price, minimum quantity). Prices live in `data/prices.json`, separate from vendor data, and save with the same **Save Changes** button. Your ratings, notes, and prices are never touched by the auto-research.
+
 ## Data schema
 
 Each vendor in `data/vendors.json`:
@@ -53,4 +57,6 @@ Each vendor in `data/vendors.json`:
 | `status` | `active` / `unverified` / `closed` |
 | `last_verified`, `added`, `updated` | Dates |
 
-Auto-research only ever changes factual fields — your ratings, notes, and tags are never modified.
+Each price book item in `data/prices.json`: `item`, `brand`, `style`, `notes`, and a `prices` array of `{ vendor_id, price, price_high, min_qty, updated }`.
+
+Auto-research only ever changes factual vendor fields — your ratings, notes, tags, and price book are never modified.
