@@ -22,10 +22,10 @@
       "id": "amaze-apparel",
       "name": "Amaze Apparel",
       "category": "Blank Apparel",
-      "address": "Olympic Blvd & Wall St area, Los Angeles, CA (exact address unverified)",
+      "address": "1015 Wall St Unit #112, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
-      "email": "",
+      "phone": "213-746-5252",
+      "email": "amazeapparel1@gmail.com",
       "website": "https://www.amazeapparelusa.com",
       "instagram": "",
       "contact_person": "",
@@ -35,10 +35,25 @@
       "brands": [],
       "items": [
         "T-shirts",
-        "Women's",
-        "Men's"
+        "Women's Jackets",
+        "Women's Plus Size Jackets",
+        "Women's Sweaters",
+        "Women's Vests",
+        "Women's Sets",
+        "Women's Jeans",
+        "Women's Leggings",
+        "Women's Tops",
+        "Women's Shorts",
+        "Women's Dresses",
+        "Men's Jackets",
+        "Men's Vests",
+        "Men's Jeans",
+        "Men's Sets",
+        "Men's Shirts",
+        "Men's Pants",
+        "Men's Shorts"
       ],
-      "hours": "",
+      "hours": "Monday-Friday 9AM-5PM, Saturday-Sunday Closed",
       "price_notes": "Wholesale prices without a seller permit at 12+ pcs/style",
       "parking_notes": "",
       "rating": 0,
@@ -46,17 +61,18 @@
         "showroom"
       ],
       "notes": "Showroom you can visit. Address and phone need verification — good first test for the auto-update button.",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "ap3-sports",
       "name": "AP3 Sports",
       "category": "Blank Apparel",
-      "address": "1401 S Main St, Los Angeles, CA",
+      "address": "1401 S Main St #102, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 746-1231",
       "email": "",
       "website": "",
       "instagram": "",
@@ -76,9 +92,10 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "c-h-sportswear",
@@ -86,7 +103,7 @@
       "category": "Blank Apparel",
       "address": "1331 S Main St, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "213-748-4810",
       "email": "",
       "website": "",
       "instagram": "",
@@ -96,9 +113,10 @@
       "min_order": "",
       "brands": [],
       "items": [
-        "Sportswear"
+        "Sportswear",
+        "Men's Long Sleeve T-Shirts"
       ],
-      "hours": "",
+      "hours": "Mon-Thu 9:00 AM - 5:30 PM, Fri 9:00 AM - 5:00 PM",
       "price_notes": "",
       "parking_notes": "",
       "rating": 0,
@@ -106,9 +124,10 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "cotton-heritage",
@@ -117,22 +136,28 @@
       "address": "6393 E Washington Blvd, Commerce, CA 90040",
       "neighborhood": "Commerce (near DTLA)",
       "phone": "(323) 722-5592",
-      "email": "",
+      "email": "csr@cottonheritage.com",
       "website": "https://cottonheritage.com",
-      "instagram": "",
+      "instagram": "cottonheritage",
       "contact_person": "",
       "wholesale": "Wholesale only",
       "resale_permit_required": true,
-      "min_order": "",
+      "min_order": "No minimum for general wholesale orders; custom/private label programs have specific minimums (e.g., 600 for custom fleece, 1200 for custom t-shirts/private label).",
       "brands": [
         "Cotton Heritage"
       ],
       "items": [
         "T-shirts",
         "Fleece",
-        "Hoodies"
+        "Hoodies",
+        "Joggers",
+        "Sweatshirts",
+        "Tanks",
+        "Shorts",
+        "Long Sleeve T-shirts",
+        "Crewnecks"
       ],
-      "hours": "Mon-Fri 8am-5pm",
+      "hours": "Mon-Fri 8:30am-5:30pm Pacific",
       "price_notes": "",
       "parking_notes": "",
       "rating": 0,
@@ -142,8 +167,9 @@
       ],
       "notes": "Blank apparel manufacturer with LA-area warehouse; good hoodie/fleece quality.",
       "status": "active",
-      "last_verified": "2026-07-02",
-      "added": "2026-07-02"
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "doby-sports-wear",
@@ -151,7 +177,7 @@
       "category": "Blank Apparel",
       "address": "1327 S Main St, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 749-3887",
       "email": "",
       "website": "",
       "instagram": "",
@@ -170,17 +196,18 @@
       "rating": 0,
       "tags": [],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "haddadin-sportswear",
       "name": "Haddadin Sportswear",
       "category": "Blank Apparel",
-      "address": "1415 S Los Angeles St, Los Angeles, CA",
+      "address": "1415 S Los Angeles St, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 746-3130",
       "email": "",
       "website": "",
       "instagram": "",
@@ -200,9 +227,10 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "joy-sportswear",
@@ -210,7 +238,7 @@
       "category": "Blank Apparel",
       "address": "1334 S Main St, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 741-9777",
       "email": "",
       "website": "",
       "instagram": "",
@@ -230,33 +258,42 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "los-angeles-apparel",
       "name": "Los Angeles Apparel (Factory Store)",
       "category": "Blank Apparel",
-      "address": "1020 E 59th St, Los Angeles, CA 90001",
+      "address": "812 E 59th St, Los Angeles, CA 90001",
       "neighborhood": "South LA (not DTLA proper)",
       "phone": "(213) 275-3120",
-      "email": "",
+      "email": "orders@losangelesapparel.net",
       "website": "https://losangelesapparel.net",
       "instagram": "losangelesapparel",
       "contact_person": "",
       "wholesale": "Wholesale + Retail",
-      "resale_permit_required": false,
-      "min_order": "",
+      "resale_permit_required": true,
+      "min_order": "None for blanks; 6-12 for custom",
       "brands": [
         "Los Angeles Apparel"
       ],
       "items": [
         "T-shirts",
+        "Tank Tops",
+        "Sweatshirts",
+        "Hoodies",
         "Fleece",
+        "Bottoms",
+        "Dresses",
+        "Bodysuits",
+        "Swimwear",
+        "Accessories",
         "Garment-dyed blanks"
       ],
-      "hours": "Mon-Fri 10am-7pm",
+      "hours": "Mon-Fri 10am-7:30pm, Sat-Sun 10am-8pm",
       "price_notes": "",
       "parking_notes": "",
       "rating": 0,
@@ -266,16 +303,17 @@
       ],
       "notes": "Factory store at their vertically integrated plant; wholesale and retail. Multiple buildings on E 59th St (711, 812, 1020).",
       "status": "active",
-      "last_verified": "2026-07-02",
-      "added": "2026-07-02"
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "main-sports-world-inc",
       "name": "Main Sports World Inc.",
       "category": "Blank Apparel",
-      "address": "1416 S Main St, Los Angeles, CA",
+      "address": "1416 S Main St, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 744-1665",
       "email": "",
       "website": "",
       "instagram": "",
@@ -287,7 +325,7 @@
       "items": [
         "Sportswear"
       ],
-      "hours": "",
+      "hours": "Mon-Fri 7:00 am-5:30pm",
       "price_notes": "",
       "parking_notes": "",
       "rating": 0,
@@ -295,17 +333,18 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "majestic-sportswear-inc",
       "name": "Majestic Sportswear Inc.",
       "category": "Blank Apparel",
-      "address": "1326 S Main St, Los Angeles, CA",
+      "address": "1326 S Main St #5, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 748-5029",
       "email": "",
       "website": "",
       "instagram": "",
@@ -325,17 +364,18 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "marathon-sports",
       "name": "Marathon Sports",
       "category": "Blank Apparel",
-      "address": "1155 S Maple Ave, Los Angeles, CA",
+      "address": "1155 S Maple Ave, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 747-4323",
       "email": "",
       "website": "",
       "instagram": "",
@@ -354,9 +394,10 @@
       "rating": 0,
       "tags": [],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "maya-sportswear-inc",
@@ -364,7 +405,7 @@
       "category": "Blank Apparel",
       "address": "1334 S Main St, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 742-0742",
       "email": "",
       "website": "",
       "instagram": "",
@@ -374,9 +415,10 @@
       "min_order": "",
       "brands": [],
       "items": [
-        "Sportswear"
+        "Sportswear",
+        "T Shirts Embroidery"
       ],
-      "hours": "",
+      "hours": "Monday-Friday 08:00-17:00, Saturday 09:00-14:00",
       "price_notes": "",
       "parking_notes": "",
       "rating": 0,
@@ -384,17 +426,18 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "mega-sports-wear-inc",
       "name": "Mega Sports Wear Inc.",
       "category": "Blank Apparel",
-      "address": "1335 S Main St, Los Angeles, CA",
+      "address": "1335 S Main St, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 746-1241",
       "email": "",
       "website": "",
       "instagram": "",
@@ -406,7 +449,7 @@
       "items": [
         "Sportswear"
       ],
-      "hours": "",
+      "hours": "Monday-Friday 08:00 - 16:00",
       "price_notes": "",
       "parking_notes": "",
       "rating": 0,
@@ -414,15 +457,16 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "one-stop-t-shirt-warehouse",
       "name": "One Stop T-Shirt Warehouse",
       "category": "Blank Apparel",
-      "address": "1320 Main St #1, Los Angeles, CA 90015",
+      "address": "1320 S Main St Unit 1, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
       "phone": "(213) 747-7600",
       "email": "onestop1320@gmail.com",
@@ -438,8 +482,6 @@
         "Comfort Colors",
         "Next Level",
         "Suna",
-        "C2 Performance",
-        "PlayeryTees",
         "Three Layer",
         "True Crest",
         "Q-Tees"
@@ -454,7 +496,7 @@
         "Aprons",
         "Safety wear"
       ],
-      "hours": "",
+      "hours": "Mon-Fri: 9:00 AM - 5:00 PM; Sat: 9:00 AM - 12:30 PM; Sun: Closed",
       "price_notes": "e.g. Gildan 5000 from $4, Comfort Colors 1717 from $9",
       "parking_notes": "",
       "rating": 0,
@@ -466,16 +508,17 @@
       ],
       "notes": "GVD regular vendor. Wholesale blanks storefront + in-house screen printing and embroidery. New Shopify site with online wholesale accounts.",
       "status": "active",
-      "last_verified": "2026-07-02",
-      "added": "2026-07-02"
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "pnp-sports-wear",
       "name": "PNP Sports Wear",
       "category": "Blank Apparel",
-      "address": "1218 1/2 Santee St, Los Angeles, CA",
+      "address": "1218 1/2 Santee St B, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 393-8610",
       "email": "",
       "website": "",
       "instagram": "",
@@ -493,9 +536,10 @@
       "rating": 0,
       "tags": [],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "rimab-sports",
@@ -523,9 +567,10 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "sap-man",
@@ -533,9 +578,9 @@
       "category": "Blank Apparel",
       "address": "437 E 16th St, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 748-1733",
       "email": "",
-      "website": "",
+      "website": "https://www.sapmansportswear.com",
       "instagram": "",
       "contact_person": "",
       "wholesale": "Wholesale only",
@@ -543,7 +588,10 @@
       "min_order": "",
       "brands": [],
       "items": [
-        "Sportswear"
+        "Sportswear",
+        "Apparel",
+        "Footwear",
+        "Accessories"
       ],
       "hours": "",
       "price_notes": "",
@@ -553,9 +601,10 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "sky-sportswear",
@@ -566,20 +615,34 @@
       "phone": "(213) 746-9963",
       "email": "info@skysportswear.com",
       "website": "https://skysportswear.com",
-      "instagram": "",
+      "instagram": "@skysportswear",
       "contact_person": "",
       "wholesale": "Wholesale + Retail",
       "resale_permit_required": false,
-      "min_order": "",
+      "min_order": "24 pieces in-store for blanks and custom prints; no minimum for samples online",
       "brands": [
-        "Sky house blanks",
+        "Keys by Sky Sportswear",
         "Los Angeles Apparel",
-        "Cotton Heritage"
+        "Cotton Heritage",
+        "New Era",
+        "Port Authority",
+        "Pro 5",
+        "Shakawear",
+        "Smart Blanks",
+        "VOS"
       ],
       "items": [
         "T-shirts",
         "Hoodies",
-        "Fleece"
+        "Fleece",
+        "Sweatshirts",
+        "Sweatpants",
+        "Joggers",
+        "Flared Pants",
+        "Tracksuit Zip-up Sweatshirt",
+        "Tracksuit Wide-leg Trousers",
+        "Tank Tops",
+        "Jackets"
       ],
       "hours": "Mon-Fri 8am-5pm, Sat 8am-1pm",
       "price_notes": "",
@@ -593,9 +656,9 @@
       ],
       "notes": "I like their in-house line, Key. Nice boxy oversized fit for t-shirts. Popular DTLA blank apparel spot; also does in-house screen printing, embroidery and DTG. Now carries their own house blanks line.",
       "status": "active",
-      "last_verified": "2026-07-02",
+      "last_verified": "2026-07-04",
       "added": "2026-07-02",
-      "updated": "2026-07-03"
+      "updated": "2026-07-04"
     },
     {
       "id": "sports-avenue",
@@ -603,7 +666,7 @@
       "category": "Blank Apparel",
       "address": "213 E 14th St, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 745-7678",
       "email": "",
       "website": "",
       "instagram": "",
@@ -621,9 +684,10 @@
       "rating": 0,
       "tags": [],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "sports-union",
@@ -631,7 +695,7 @@
       "category": "Blank Apparel",
       "address": "1424 S Main St, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 745-2260",
       "email": "",
       "website": "",
       "instagram": "",
@@ -651,9 +715,10 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "supergroup-la",
@@ -663,7 +728,7 @@
       "neighborhood": "Fashion District",
       "phone": "(213) 747-0190",
       "email": "",
-      "website": "https://supergroupla.com",
+      "website": "",
       "instagram": "supergroupla1",
       "contact_person": "",
       "wholesale": "Wholesale + Retail",
@@ -681,27 +746,57 @@
       "tags": [],
       "notes": "Sells both blanks for starting a brand and pre-designed graphic tees.",
       "status": "active",
-      "last_verified": "2026-07-02",
-      "added": "2026-07-02"
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "union-hosiery",
       "name": "Union Hosiery",
       "category": "Blank Apparel",
-      "address": "766 E Pico Blvd, Los Angeles, CA",
+      "address": "766 E Pico Blvd, Los Angeles, CA 90021",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 741-0744",
       "email": "",
-      "website": "",
+      "website": "https://www.unihosiery.com",
       "instagram": "",
       "contact_person": "",
       "wholesale": "Wholesale only",
       "resale_permit_required": true,
-      "min_order": "",
-      "brands": [],
+      "min_order": "$200",
+      "brands": [
+        "Buruka",
+        "Knocker",
+        "Mopas",
+        "Mamia",
+        "Top Pro",
+        "Power Club",
+        "Sofra",
+        "KW FASHION",
+        "C.C.",
+        "MIZ FASHION",
+        "Cheveux",
+        "JASMINE",
+        "LAON",
+        "ELEGANT ESSENCE",
+        "UNICA",
+        "FADIVO",
+        "K&B"
+      ],
       "items": [
         "Hosiery",
-        "Socks"
+        "Socks",
+        "Underwear",
+        "Bras",
+        "Panties",
+        "Activewear",
+        "Fashion Accessories",
+        "T-shirts",
+        "Beanies",
+        "Gloves",
+        "Bandanas",
+        "Scarves",
+        "Lingerie"
       ],
       "hours": "",
       "price_notes": "",
@@ -711,9 +806,10 @@
         "industry only"
       ],
       "notes": "Socks/hosiery - useful for custom sock printing. Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "vinatex",
@@ -751,7 +847,7 @@
       "category": "Blank Apparel",
       "address": "523 E Olympic Blvd, Los Angeles, CA",
       "neighborhood": "Fashion District",
-      "phone": "",
+      "phone": "(213) 627-0184",
       "email": "",
       "website": "",
       "instagram": "",
@@ -771,9 +867,10 @@
         "industry only"
       ],
       "notes": "Listed in the LA Fashion District wholesale directory (fashiondistrict.org).",
-      "status": "unverified",
-      "last_verified": "",
-      "added": "2026-07-02"
+      "status": "active",
+      "last_verified": "2026-07-04",
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "world-pop-sports-wear",
