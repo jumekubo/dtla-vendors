@@ -67,6 +67,13 @@
   .empty { text-align: center; color: var(--muted); padding: 60px 20px; font-size: .95rem; }
   code { background: #eee9df; padding: 1px 6px; border-radius: 5px; font-size: .8em; }
   .settings-note { font-size: .8rem; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+  .ptable { width: 100%; font-size: .82rem; border-collapse: collapse; }
+  .ptable td { padding: 4px 6px; border-bottom: 1px dashed var(--border); vertical-align: middle; }
+  .pprice { font-weight: 700; color: var(--green); white-space: nowrap; }
+  .pdate { color: var(--muted); font-size: .7rem; white-space: nowrap; }
+  .price-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .price-row select { flex: 2.2; min-width: 0; }
+  .price-row input { flex: 1; min-width: 0; }
   @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -108,9 +115,12 @@
       <option value="1">Any rated</option>
     </select>
     <button class="btn ghost small" onclick="exportJSON()">Export</button>
+    <button class="btn small" id="viewToggle" onclick="toggleView()">&#36; Price Book</button>
+    <button class="btn primary small" id="addItemBtn" onclick="openItemEditor()" style="display:none">+ Add Item</button>
   </div>
   <div class="stats" id="stats"></div>
   <div class="grid" id="grid"></div>
+  <div class="grid" id="pbook" style="display:none"></div>
 </main>
 
 <!-- Editor dialog -->
@@ -146,6 +156,29 @@
     <button class="btn danger" id="deleteBtn" onclick="deleteVendor()" style="margin-right:auto">Delete</button>
     <button class="btn ghost" onclick="editorDlg.close()">Cancel</button>
     <button class="btn primary" onclick="saveVendor()">Save Vendor</button>
+  </div>
+</dialog>
+
+<!-- Price book item dialog -->
+<dialog id="itemDlg">
+  <div class="dlg-head" id="itemTitle">Add Price Book Item</div>
+  <div class="dlg-body">
+    <div class="form-grid">
+      <div class="full"><label>Item name *</label><input id="p_item" placeholder="Gildan 5000 Heavy Cotton Tee"></div>
+      <div><label>Brand</label><input id="p_brand" placeholder="Gildan"></div>
+      <div><label>Style #</label><input id="p_style" placeholder="5000"></div>
+      <div class="full"><label>Notes</label><input id="p_notes" placeholder="weights, colors, anything worth remembering"></div>
+      <div class="full">
+        <label>Vendor prices (low / high $, min qty)</label>
+        <div id="priceRows"></div>
+        <button class="btn ghost small" type="button" onclick="addPriceRow()">+ Add vendor price</button>
+      </div>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn danger" id="itemDeleteBtn" onclick="deleteItem()" style="margin-right:auto">Delete</button>
+    <button class="btn ghost" onclick="itemDlg.close()">Cancel</button>
+    <button class="btn primary" onclick="saveItem()">Save Item</button>
   </div>
 </dialog>
 
@@ -199,10 +232,16 @@
 
 <script>
 const DATA_PATH = 'data/vendors.json';
+const PRICES_PATH = 'data/prices.json';
 let DB = { meta: { categories: [] }, vendors: [] };
+let PB = { items: [] };
 let fileSha = null;
+let pricesSha = null;
 let dirty = false;
+let pricesDirty = false;
 let editingId = null;
+let editingItemId = null;
+let view = 'vendors';
 
 // ---------- config ----------
 function detectRepo() {
@@ -235,16 +274,37 @@ async function load() {
           const j = await r.json();
           fileSha = j.sha;
           DB = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), ch => ch.charCodeAt(0))));
-          init(); return;
+          init(); loadPrices(c); return;
         }
       } catch (e) { /* fall through to relative fetch */ }
     }
     const r = await fetch(DATA_PATH + '?t=' + Date.now());
     DB = await r.json();
-    init();
+    init(); loadPrices(c);
   } catch (e) {
     document.getElementById('grid').innerHTML = '<div class="empty">Could not load data/vendors.json — if you opened this file directly, run a local server (e.g. <code>python3 -m http.server</code>) or use the GitHub Pages URL.</div>';
   }
+}
+async function loadPrices(c) {
+  try {
+    if (c && c.owner && c.repo) {
+      const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${PRICES_PATH}?ref=main&t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: c.token ? { Authorization: `Bearer ${c.token}` } : {}
+      });
+      if (r.ok) {
+        const j = await r.json();
+        pricesSha = j.sha;
+        PB = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), ch => ch.charCodeAt(0))));
+        if (view === 'prices') render();
+        return;
+      }
+      if (r.status === 404) { PB = { items: [] }; return; }
+    }
+    const r2 = await fetch(PRICES_PATH + '?t=' + Date.now());
+    PB = r2.ok ? await r2.json() : { items: [] };
+    if (view === 'prices') render();
+  } catch (e) { PB = PB && PB.items ? PB : { items: [] }; }
 }
 function init() {
   const catSel = document.getElementById('fCat'), eCat = document.getElementById('e_category');
@@ -273,6 +333,7 @@ function render() {
   // Only honor search text once the user has actually typed in the field.
   if (qEl.value && !qUserTyped && document.activeElement !== qEl) qEl.value = '';
   const q = qEl.value.toLowerCase().trim();
+  if (view === 'prices') { renderPrices(q); return; }
   const fc = document.getElementById('fCat').value, fw = document.getElementById('fWs').value, fs = document.getElementById('fStatus').value;
   const fr = parseInt(document.getElementById('fRating').value) || 0;
   const list = DB.vendors.filter(v => {
@@ -315,6 +376,115 @@ function render() {
         ${v.last_verified ? `<span style="margin-left:auto;font-size:.7rem;color:var(--muted)">verified ${esc(v.last_verified)}</span>` : ''}
       </div>
     </div>`).join('');
+}
+
+// ---------- price book ----------
+function toggleView() {
+  view = view === 'vendors' ? 'prices' : 'vendors';
+  const isV = view === 'vendors';
+  document.getElementById('grid').style.display = isV ? '' : 'none';
+  document.getElementById('pbook').style.display = isV ? 'none' : '';
+  ['fCat','fWs','fStatus','fRating'].forEach(id => document.getElementById(id).style.display = isV ? '' : 'none');
+  document.getElementById('addItemBtn').style.display = isV ? 'none' : '';
+  document.getElementById('viewToggle').textContent = isV ? '$ Price Book' : '◀ Vendors';
+  document.getElementById('q').placeholder = isV ? 'Search name, brand, item, address, notes…' : 'Search items, brands, styles…';
+  render();
+}
+function renderPrices(q) {
+  const all = PB.items || [];
+  const items = all.filter(it => !q || [it.item, it.brand, it.style, it.notes].join(' ').toLowerCase().includes(q))
+    .sort((a,b) => a.item.localeCompare(b.item));
+  document.getElementById('stats').innerHTML =
+    `${items.length} of ${all.length} price book items` + ((dirty || pricesDirty) ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
+  const el = document.getElementById('pbook');
+  if (!items.length) { el.innerHTML = '<div class="empty">No items match. Click “+ Add Item” to add blanks you buy and who sells them cheapest.</div>'; return; }
+  el.innerHTML = items.map(it => {
+    const prices = (it.prices || []).slice().sort((a,b) => (a.price ?? 1e9) - (b.price ?? 1e9));
+    const best = prices.length > 1 ? prices[0] : null;
+    return `<div class="card">
+      <h3>${esc(it.item)}
+        ${it.brand ? `<span class="badge cat">${esc(it.brand)}</span>` : ''}
+        ${it.style ? `<span class="badge unknown">#${esc(it.style)}</span>` : ''}
+      </h3>
+      ${prices.length ? `<table class="ptable">${prices.map(p => {
+        const v = DB.vendors.find(x => x.id === p.vendor_id);
+        return `<tr>
+          <td style="width:1%">${p === best ? '<span class="badge ws-only">BEST</span>' : ''}</td>
+          <td>${esc(v ? v.name : p.vendor_id)}</td>
+          <td class="pprice">$${(+p.price).toFixed(2)}${p.price_high ? '–$' + (+p.price_high).toFixed(2) : ''}</td>
+          <td>${esc(p.min_qty || '')}</td>
+          <td class="pdate">${esc(p.updated || '')}</td>
+        </tr>`; }).join('')}</table>` : '<div class="notes">No vendor prices yet — hit Edit to add one.</div>'}
+      ${it.notes ? `<div class="notes">${esc(it.notes)}</div>` : ''}
+      <div class="actions"><button class="btn ghost small" onclick="openItemEditor('${esc(it.id)}')">Edit</button></div>
+    </div>`; }).join('');
+}
+function openItemEditor(id) {
+  editingItemId = id || null;
+  const it = id ? PB.items.find(x => x.id === id) : {};
+  document.getElementById('itemTitle').textContent = id ? `Edit — ${it.item}` : 'Add Price Book Item';
+  document.getElementById('itemDeleteBtn').style.display = id ? '' : 'none';
+  document.getElementById('p_item').value = it.item || '';
+  document.getElementById('p_brand').value = it.brand || '';
+  document.getElementById('p_style').value = it.style || '';
+  document.getElementById('p_notes').value = it.notes || '';
+  document.getElementById('priceRows').innerHTML = '';
+  (it.prices || []).forEach(p => addPriceRow(p));
+  if (!id) addPriceRow();
+  itemDlg.showModal();
+}
+function addPriceRow(p = {}) {
+  const row = document.createElement('div');
+  row.className = 'price-row';
+  row.innerHTML = `
+    <select class="pr-vendor">${DB.vendors.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(v => `<option value="${esc(v.id)}"${p.vendor_id === v.id ? ' selected' : ''}>${esc(v.name)}</option>`).join('')}</select>
+    <input class="pr-price" type="number" step="0.01" min="0" placeholder="$ low" value="${p.price ?? ''}">
+    <input class="pr-high" type="number" step="0.01" min="0" placeholder="$ high" value="${p.price_high ?? ''}">
+    <input class="pr-min" placeholder="min qty" value="${esc(p.min_qty || '')}">
+    <button class="btn ghost small" type="button" onclick="this.parentElement.remove()">✕</button>`;
+  row.dataset.updated = p.updated || '';
+  row.dataset.orig = JSON.stringify([p.vendor_id, p.price, p.price_high, p.min_qty]);
+  document.getElementById('priceRows').appendChild(row);
+}
+function saveItem() {
+  const name = document.getElementById('p_item').value.trim();
+  if (!name) { toast('Item name is required', true); return; }
+  const today = new Date().toISOString().slice(0,10);
+  let it = editingItemId ? PB.items.find(x => x.id === editingItemId) : null;
+  if (!it) {
+    it = { id: slug(name) || 'item-' + Date.now() };
+    while (PB.items.some(x => x.id === it.id)) it.id += '-2';
+    PB.items.push(it);
+  }
+  it.item = name;
+  it.brand = document.getElementById('p_brand').value.trim();
+  it.style = document.getElementById('p_style').value.trim();
+  it.notes = document.getElementById('p_notes').value.trim();
+  it.prices = [...document.querySelectorAll('#priceRows .price-row')].map(row => {
+    const price = parseFloat(row.querySelector('.pr-price').value);
+    if (isNaN(price)) return null;
+    const high = parseFloat(row.querySelector('.pr-high').value);
+    const entry = {
+      vendor_id: row.querySelector('.pr-vendor').value,
+      price,
+      price_high: isNaN(high) ? null : high,
+      min_qty: row.querySelector('.pr-min').value.trim()
+    };
+    // keep the old "updated" date unless the row actually changed
+    const unchanged = row.dataset.orig === JSON.stringify([entry.vendor_id, entry.price, entry.price_high, entry.min_qty]);
+    entry.updated = unchanged && row.dataset.updated ? row.dataset.updated : today;
+    return entry;
+  }).filter(Boolean);
+  it.updated = today;
+  pricesDirty = true; itemDlg.close(); render();
+  toast('Item saved locally — click "Save Changes" to commit');
+}
+function deleteItem() {
+  const it = PB.items.find(x => x.id === editingItemId);
+  if (!it || !confirm(`Delete "${it.item}" from the price book?`)) return;
+  PB.items = PB.items.filter(x => x.id !== editingItemId);
+  pricesDirty = true; itemDlg.close(); render();
+  toast('Item removed — click "Save Changes" to commit');
 }
 
 // ---------- editor ----------
@@ -370,37 +540,39 @@ function deleteVendor() {
 function b64encode(str) {
   return btoa(String.fromCharCode(...new TextEncoder().encode(str)));
 }
+async function putJson(c, path, obj, knownSha, message) {
+  const url = `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${path}`;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    // Always fetch a FRESH sha (bypass the browser's 60s API cache) —
+    // a stale sha makes GitHub reject the save with a "does not match" error.
+    const cur = await fetch(url + '?ref=main&t=' + Date.now(), { cache: 'no-store', headers: { Authorization: `Bearer ${c.token}` } });
+    let sha = knownSha;
+    if (cur.ok) sha = (await cur.json()).sha;
+    const body = { message, content: b64encode(JSON.stringify(obj, null, 2) + '\n'), branch: 'main' };
+    if (sha) body.sha = sha;
+    const r = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${c.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (r.ok) return (await r.json()).content.sha;
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 409 && attempt === 0) continue; // stale version — retry once with fresh sha
+    throw new Error(j.message || r.status);
+  }
+}
 async function saveToGitHub() {
   const c = cfg();
   if (!c.token || !c.owner || !c.repo) { openSettings(); toast('Add your GitHub token in Settings first', true); return; }
-  if (!dirty && !confirm('No unsaved changes detected. Commit anyway?')) return;
+  if (!dirty && !pricesDirty && !confirm('No unsaved changes detected. Commit anyway?')) return;
   const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.textContent = 'Saving…';
   try {
-    DB.meta.updated = new Date().toISOString().slice(0,10);
-    const url = `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${DATA_PATH}`;
-    let saved = false;
-    for (let attempt = 0; attempt < 2 && !saved; attempt++) {
-      // Always fetch a FRESH sha (bypass the browser's 60s API cache) —
-      // a stale sha makes GitHub reject the save with a "does not match" error.
-      const cur = await fetch(url + '?ref=main&t=' + Date.now(), { cache: 'no-store', headers: { Authorization: `Bearer ${c.token}` } });
-      if (cur.ok) fileSha = (await cur.json()).sha;
-      const body = {
-        message: `Update vendors (${DB.vendors.length} entries) via tracker UI`,
-        content: b64encode(JSON.stringify(DB, null, 2) + '\n'),
-        branch: 'main'
-      };
-      if (fileSha) body.sha = fileSha;
-      const r = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${c.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (r.ok) {
-        fileSha = (await r.json()).content.sha;
-        saved = true;
-      } else {
-        const j = await r.json().catch(() => ({}));
-        if (r.status === 409 && attempt === 0) continue; // stale version — retry once with fresh sha
-        throw new Error(j.message || r.status);
-      }
+    if (dirty || !pricesDirty) {
+      DB.meta.updated = new Date().toISOString().slice(0,10);
+      fileSha = await putJson(c, DATA_PATH, DB, fileSha, `Update vendors (${DB.vendors.length} entries) via tracker UI`);
+      dirty = false;
     }
-    dirty = false; render();
+    if (pricesDirty) {
+      pricesSha = await putJson(c, PRICES_PATH, PB, pricesSha, `Update price book (${(PB.items || []).length} items) via tracker UI`);
+      pricesDirty = false;
+    }
+    render();
     toast('Saved to GitHub ✓ (Pages may take ~1 min to reflect changes)');
   } catch (e) {
     toast('Save failed: ' + e.message, true);
@@ -471,7 +643,7 @@ function toast(msg, err) {
 document.getElementById('q').addEventListener('input', e => {
   if (document.activeElement === e.target) qUserTyped = true;
 });
-window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (dirty || pricesDirty) { e.preventDefault(); e.returnValue = ''; } });
 load();
 </script>
 </body>
