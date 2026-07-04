@@ -2061,7 +2061,7 @@
       "id": "target-trim",
       "name": "Target Trim Corp",
       "category": "Trims & Notions",
-      "address": "Los Angeles, CA (exact address unverified)",
+      "address": "623 E 9th St, Los Angeles, CA 90015",
       "neighborhood": "Fashion District",
       "phone": "",
       "email": "",
@@ -2081,12 +2081,13 @@
       "hours": "",
       "price_notes": "",
       "parking_notes": "",
-      "rating": 0,
+      "rating": 5,
       "tags": [],
       "notes": "Claims to be the largest trims/notions store in DTLA. Address needs verification.",
-      "status": "unverified",
+      "status": "active",
       "last_verified": "",
-      "added": "2026-07-02"
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "trim-2000-plus",
