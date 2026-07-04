@@ -87,6 +87,29 @@
   .price-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
   .price-row select { flex: 2.2; min-width: 0; }
   .price-row input { flex: 1; min-width: 0; }
+  .tabs { display: flex; gap: 4px; background: #eee9df; border-radius: 8px; padding: 3px; }
+  .tabs button { border: none; background: transparent; padding: 7px 12px; font-size: .8rem; font-weight: 600; border-radius: 6px; cursor: pointer; color: var(--muted); }
+  .tabs button.active { background: #fff; color: var(--ink); box-shadow: var(--shadow); }
+  .runlist { display: flex; flex-direction: column; gap: 14px; }
+  .run-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+  .run-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .run-head h3 { font-size: 1.02rem; }
+  .run-created { font-size: .72rem; color: var(--muted); }
+  .run-stop { display: flex; gap: 10px; padding: 10px 0; border-top: 1px dashed var(--border); }
+  .run-stop:first-child { border-top: none; }
+  .stop-num { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .stop-body { flex: 1; min-width: 0; }
+  .stop-vendor { font-weight: 700; font-size: .9rem; }
+  .stop-addr { font-size: .76rem; color: var(--muted); margin-bottom: 4px; }
+  .run-checklist { margin-top: 4px; display: flex; flex-direction: column; gap: 3px; }
+  .run-check-item { display: flex; align-items: baseline; gap: 6px; font-size: .82rem; cursor: pointer; }
+  .run-check-item input { margin-top: 2px; }
+  .run-check-item.done span { text-decoration: line-through; color: var(--muted); }
+  .run-stop-notes { font-size: .78rem; color: var(--muted); font-style: italic; margin-top: 4px; }
+  .run-stop-row { border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+  .run-stop-row .row-top { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .run-stop-row .row-top select { flex: 1; min-width: 0; }
+  .run-stop-row textarea { min-height: 44px; }
   @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -128,12 +151,18 @@
       <option value="1">Any rated</option>
     </select>
     <button class="btn ghost small" onclick="exportJSON()">Export</button>
-    <button class="btn small" id="viewToggle" onclick="toggleView()">&#36; Price Book</button>
+    <div class="tabs" id="viewTabs">
+      <button id="tabVendors" onclick="setView('vendors')" class="active">Vendors</button>
+      <button id="tabPrices" onclick="setView('prices')">&#36; Price Book</button>
+      <button id="tabRuns" onclick="setView('runs')">&#128506; Run Planner</button>
+    </div>
     <button class="btn primary small" id="addItemBtn" onclick="openItemEditor()" style="display:none">+ Add Item</button>
+    <button class="btn primary small" id="addRunBtn" onclick="openRunEditor()" style="display:none">+ New Run</button>
   </div>
   <div class="stats" id="stats"></div>
   <div class="grid" id="grid"></div>
   <div class="grid" id="pbook" style="display:none"></div>
+  <div class="runlist" id="runs" style="display:none"></div>
 </main>
 
 <!-- Editor dialog -->
@@ -221,6 +250,26 @@
   </div>
 </dialog>
 
+<!-- Run planner dialog -->
+<dialog id="runDlg">
+  <div class="dlg-head" id="runTitle">New Run</div>
+  <div class="dlg-body">
+    <div class="form-grid">
+      <div class="full"><label>Run name *</label><input id="r_name" placeholder="e.g. WNS restock, weekly supply run"></div>
+      <div class="full">
+        <label>Stops (in visiting order)</label>
+        <div id="runStops"></div>
+        <button class="btn ghost small" type="button" onclick="addRunStopRow()">+ Add stop</button>
+      </div>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn danger" id="runDeleteBtn" onclick="deleteRun()" style="margin-right:auto">Delete</button>
+    <button class="btn ghost" onclick="runDlg.close()">Cancel</button>
+    <button class="btn primary" onclick="saveRun()">Save Run</button>
+  </div>
+</dialog>
+
 <!-- Settings dialog -->
 <dialog id="settingsDlg">
   <div class="dlg-head">Settings — GitHub connection</div>
@@ -273,18 +322,23 @@
 const DATA_PATH = 'data/vendors.json';
 const PRICES_PATH = 'data/prices.json';
 const JOBS_PATH = 'data/jobs.json';
+const RUNS_PATH = 'data/runs.json';
 let DB = { meta: { categories: [] }, vendors: [] };
 let PB = { items: [] };
 let JB = { jobs: [] };
+let RN = { runs: [] };
 let fileSha = null;
 let pricesSha = null;
 let jobsSha = null;
+let runsSha = null;
 let dirty = false;
 let pricesDirty = false;
 let jobsDirty = false;
+let runsDirty = false;
 let editingId = null;
 let editingItemId = null;
 let editingJobId = null;
+let editingRunId = null;
 let view = 'vendors';
 
 // ---------- config ----------
@@ -318,13 +372,13 @@ async function load() {
           const j = await r.json();
           fileSha = j.sha;
           DB = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), ch => ch.charCodeAt(0))));
-          init(); loadPrices(c); loadJobs(c); return;
+          init(); loadPrices(c); loadJobs(c); loadRuns(c); return;
         }
       } catch (e) { /* fall through to relative fetch */ }
     }
     const r = await fetch(DATA_PATH + '?t=' + Date.now());
     DB = await r.json();
-    init(); loadPrices(c); loadJobs(c);
+    init(); loadPrices(c); loadJobs(c); loadRuns(c);
   } catch (e) {
     document.getElementById('grid').innerHTML = '<div class="empty">Could not load data/vendors.json — if you opened this file directly, run a local server (e.g. <code>python3 -m http.server</code>) or use the GitHub Pages URL.</div>';
   }
@@ -371,6 +425,27 @@ async function loadJobs(c) {
     render();
   } catch (e) { JB = JB && JB.jobs ? JB : { jobs: [] }; }
 }
+async function loadRuns(c) {
+  try {
+    if (c && c.owner && c.repo) {
+      const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${RUNS_PATH}?ref=main&t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: c.token ? { Authorization: `Bearer ${c.token}` } : {}
+      });
+      if (r.ok) {
+        const j = await r.json();
+        runsSha = j.sha;
+        RN = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), ch => ch.charCodeAt(0))));
+        if (view === 'runs') render();
+        return;
+      }
+      if (r.status === 404) { RN = { runs: [] }; return; }
+    }
+    const r2 = await fetch(RUNS_PATH + '?t=' + Date.now());
+    RN = r2.ok ? await r2.json() : { runs: [] };
+    if (view === 'runs') render();
+  } catch (e) { RN = RN && RN.runs ? RN : { runs: [] }; }
+}
 function init() {
   const catSel = document.getElementById('fCat'), eCat = document.getElementById('e_category');
   catSel.length = 1; eCat.length = 0;
@@ -394,6 +469,8 @@ function wsBadge(w) {
 function outcomeLabel(o) {
   return { great: 'Great', good: 'Good', issues: 'Issues', bad: 'Bad' }[o] || o;
 }
+function anyDirty() { return dirty || pricesDirty || jobsDirty || runsDirty; }
+function dirtyTag() { return anyDirty() ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : ''; }
 let qUserTyped = false;
 function render() {
   const qEl = document.getElementById('q');
@@ -402,6 +479,7 @@ function render() {
   if (qEl.value && !qUserTyped && document.activeElement !== qEl) qEl.value = '';
   const q = qEl.value.toLowerCase().trim();
   if (view === 'prices') { renderPrices(q); return; }
+  if (view === 'runs') { renderRuns(q); return; }
   const fc = document.getElementById('fCat').value, fw = document.getElementById('fWs').value, fs = document.getElementById('fStatus').value;
   const fr = parseInt(document.getElementById('fRating').value) || 0;
   const list = DB.vendors.filter(v => {
@@ -415,8 +493,7 @@ function render() {
     return hay.includes(q);
   }).sort((a,b) => fr ? ((b.rating||0) - (a.rating||0) || a.name.localeCompare(b.name)) : a.name.localeCompare(b.name));
 
-  document.getElementById('stats').innerHTML =
-    `${list.length} of ${DB.vendors.length} vendors` + ((dirty || jobsDirty) ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
+  document.getElementById('stats').innerHTML = `${list.length} of ${DB.vendors.length} vendors` + dirtyTag();
 
   const grid = document.getElementById('grid');
   if (!list.length) { grid.innerHTML = '<div class="empty">No vendors match. Add one with “+ Add Vendor”.</div>'; return; }
@@ -461,24 +538,27 @@ function render() {
     </div>`; }).join('');
 }
 
-// ---------- price book ----------
-function toggleView() {
-  view = view === 'vendors' ? 'prices' : 'vendors';
-  const isV = view === 'vendors';
-  document.getElementById('grid').style.display = isV ? '' : 'none';
-  document.getElementById('pbook').style.display = isV ? 'none' : '';
-  ['fCat','fWs','fStatus','fRating'].forEach(id => document.getElementById(id).style.display = isV ? '' : 'none');
-  document.getElementById('addItemBtn').style.display = isV ? 'none' : '';
-  document.getElementById('viewToggle').textContent = isV ? '$ Price Book' : '◀ Vendors';
-  document.getElementById('q').placeholder = isV ? 'Search name, brand, item, address, notes…' : 'Search items, brands, styles…';
+// ---------- view tabs ----------
+function setView(v) {
+  view = v;
+  const isVendors = view === 'vendors', isPrices = view === 'prices', isRuns = view === 'runs';
+  document.getElementById('grid').style.display = isVendors ? '' : 'none';
+  document.getElementById('pbook').style.display = isPrices ? '' : 'none';
+  document.getElementById('runs').style.display = isRuns ? '' : 'none';
+  ['fCat','fWs','fStatus','fRating'].forEach(id => document.getElementById(id).style.display = isVendors ? '' : 'none');
+  document.getElementById('addItemBtn').style.display = isPrices ? '' : 'none';
+  document.getElementById('addRunBtn').style.display = isRuns ? '' : 'none';
+  document.getElementById('tabVendors').className = isVendors ? 'active' : '';
+  document.getElementById('tabPrices').className = isPrices ? 'active' : '';
+  document.getElementById('tabRuns').className = isRuns ? 'active' : '';
+  document.getElementById('q').placeholder = isPrices ? 'Search items, brands, styles…' : isRuns ? 'Search run names, vendors…' : 'Search name, brand, item, address, notes…';
   render();
 }
 function renderPrices(q) {
   const all = PB.items || [];
   const items = all.filter(it => !q || [it.item, it.brand, it.style, it.notes].join(' ').toLowerCase().includes(q))
     .sort((a,b) => a.item.localeCompare(b.item));
-  document.getElementById('stats').innerHTML =
-    `${items.length} of ${all.length} price book items` + ((dirty || pricesDirty || jobsDirty) ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
+  document.getElementById('stats').innerHTML = `${items.length} of ${all.length} price book items` + dirtyTag();
   const el = document.getElementById('pbook');
   if (!items.length) { el.innerHTML = '<div class="empty">No items match. Click “+ Add Item” to add blanks you buy and who sells them cheapest.</div>'; return; }
   el.innerHTML = items.map(it => {
@@ -614,6 +694,131 @@ function deleteJob() {
   toast('Job removed — click "Save Changes" to commit');
 }
 
+// ---------- run planner ----------
+function renderRuns(q) {
+  const all = RN.runs || [];
+  const runs = all.filter(r => {
+    if (!q) return true;
+    const stopNames = (r.stops||[]).map(s => (DB.vendors.find(v=>v.id===s.vendor_id)||{}).name || '').join(' ');
+    return (r.name + ' ' + stopNames).toLowerCase().includes(q);
+  }).sort((a,b) => (b.created||'').localeCompare(a.created||''));
+  document.getElementById('stats').innerHTML = `${runs.length} of ${all.length} runs` + dirtyTag();
+  const el = document.getElementById('runs');
+  if (!runs.length) { el.innerHTML = '<div class="empty">No runs yet. Click “+ New Run” to plan a Fashion District buying trip.</div>'; return; }
+  el.innerHTML = runs.map(r => {
+    const stops = r.stops || [];
+    return `<div class="run-card">
+      <div class="run-head">
+        <h3>${esc(r.name)}</h3>
+        <span class="run-created">${stops.length} stop${stops.length===1?'':'s'}${r.created ? ' · planned ' + esc(r.created) : ''}</span>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          ${stops.length ? `<button class="btn small" onclick="openDirections('${esc(r.id)}')">&#128506; Get Directions</button>` : ''}
+          <button class="btn ghost small" onclick="openRunEditor('${esc(r.id)}')">Edit</button>
+        </div>
+      </div>
+      ${stops.map((s, i) => {
+        const v = DB.vendors.find(x => x.id === s.vendor_id);
+        return `<div class="run-stop">
+          <div class="stop-num">${i+1}</div>
+          <div class="stop-body">
+            <div class="stop-vendor">${esc(v ? v.name : s.vendor_id)}</div>
+            ${v && v.address ? `<div class="stop-addr">${esc(v.address)}</div>` : ''}
+            ${(s.items||[]).length ? `<div class="run-checklist">${s.items.map((it, j) => `
+              <label class="run-check-item${it.done ? ' done' : ''}">
+                <input type="checkbox" ${it.done ? 'checked' : ''} onchange="toggleRunItem('${esc(r.id)}','${esc(s.vendor_id)}',${i},${j})">
+                <span>${esc(it.text)}</span>
+              </label>`).join('')}</div>` : ''}
+            ${s.notes ? `<div class="run-stop-notes">${esc(s.notes)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+function toggleRunItem(runId, vendorId, stopIdx, itemIdx) {
+  const r = RN.runs.find(x => x.id === runId);
+  if (!r || !r.stops[stopIdx] || !r.stops[stopIdx].items[itemIdx]) return;
+  r.stops[stopIdx].items[itemIdx].done = !r.stops[stopIdx].items[itemIdx].done;
+  runsDirty = true; render();
+}
+function openDirections(runId) {
+  const r = RN.runs.find(x => x.id === runId);
+  if (!r) return;
+  const addrs = (r.stops||[]).map(s => {
+    const v = DB.vendors.find(x => x.id === s.vendor_id);
+    return v ? (v.address || v.name) : null;
+  }).filter(Boolean);
+  if (!addrs.length) { toast('No stops with addresses yet', true); return; }
+  window.open('https://www.google.com/maps/dir/' + addrs.map(a => encodeURIComponent(a)).join('/'), '_blank');
+}
+function openRunEditor(id) {
+  editingRunId = id || null;
+  const r = id ? RN.runs.find(x => x.id === id) : {};
+  document.getElementById('runTitle').textContent = id ? `Edit — ${r.name}` : 'New Run';
+  document.getElementById('runDeleteBtn').style.display = id ? '' : 'none';
+  document.getElementById('r_name').value = r.name || '';
+  document.getElementById('runStops').innerHTML = '';
+  (r.stops || []).forEach(s => addRunStopRow(s));
+  if (!id) addRunStopRow();
+  runDlg.showModal();
+}
+function addRunStopRow(s = {}) {
+  const row = document.createElement('div');
+  row.className = 'run-stop-row';
+  const vendorOpts = DB.vendors.slice().sort((a,b)=>a.name.localeCompare(b.name))
+    .map(v => `<option value="${esc(v.id)}"${s.vendor_id === v.id ? ' selected' : ''}>${esc(v.name)}</option>`).join('');
+  row.innerHTML = `
+    <div class="row-top">
+      <select class="rs-vendor">${vendorOpts}</select>
+      <button class="btn ghost small" type="button" title="Move up" onclick="moveStopRow(this,-1)">&#8593;</button>
+      <button class="btn ghost small" type="button" title="Move down" onclick="moveStopRow(this,1)">&#8595;</button>
+      <button class="btn ghost small" type="button" onclick="this.closest('.run-stop-row').remove()">&#10005;</button>
+    </div>
+    <textarea class="rs-items" placeholder="Checklist items, one per line (e.g. 50 Gildan 5000 white M)">${esc((s.items||[]).map(it=>it.text).join('\n'))}</textarea>
+    <input class="rs-notes" placeholder="Notes for this stop (optional)" value="${esc(s.notes || '')}" style="margin-top:6px">`;
+  row.dataset.origItems = JSON.stringify(s.items || []);
+  document.getElementById('runStops').appendChild(row);
+}
+function moveStopRow(btn, dir) {
+  const row = btn.closest('.run-stop-row');
+  const sib = dir < 0 ? row.previousElementSibling : row.nextElementSibling;
+  if (!sib) return;
+  if (dir < 0) row.parentElement.insertBefore(row, sib);
+  else row.parentElement.insertBefore(sib, row);
+}
+function saveRun() {
+  const name = document.getElementById('r_name').value.trim();
+  if (!name) { toast('Run name is required', true); return; }
+  const today = new Date().toISOString().slice(0,10);
+  let r = editingRunId ? RN.runs.find(x => x.id === editingRunId) : null;
+  if (!r) {
+    r = { id: 'run-' + Date.now(), created: today };
+    RN.runs.push(r);
+  }
+  r.name = name;
+  r.stops = [...document.querySelectorAll('#runStops .run-stop-row')].map(row => {
+    const vendor_id = row.querySelector('.rs-vendor').value;
+    if (!vendor_id) return null;
+    const orig = JSON.parse(row.dataset.origItems || '[]');
+    const lines = row.querySelector('.rs-items').value.split('\n').map(l => l.trim()).filter(Boolean);
+    const items = lines.map(text => {
+      const match = orig.find(o => o.text === text);
+      return { text, done: match ? !!match.done : false };
+    });
+    const notes = row.querySelector('.rs-notes').value.trim();
+    return { vendor_id, items, notes };
+  }).filter(Boolean);
+  runsDirty = true; runDlg.close(); render();
+  toast('Run saved locally — click "Save Changes" to commit to GitHub');
+}
+function deleteRun() {
+  const r = RN.runs.find(x => x.id === editingRunId);
+  if (!r || !confirm(`Delete run "${r.name}"?`)) return;
+  RN.runs = RN.runs.filter(x => x.id !== editingRunId);
+  runsDirty = true; runDlg.close(); render();
+  toast('Run removed — click "Save Changes" to commit');
+}
+
 // ---------- editor ----------
 const F = ['name','address','neighborhood','phone','email','website','instagram','contact_person','min_order','hours','price_notes','parking_notes','notes','last_verified'];
 function openEditor(id) {
@@ -687,10 +892,10 @@ async function putJson(c, path, obj, knownSha, message) {
 async function saveToGitHub() {
   const c = cfg();
   if (!c.token || !c.owner || !c.repo) { openSettings(); toast('Add your GitHub token in Settings first', true); return; }
-  if (!dirty && !pricesDirty && !jobsDirty && !confirm('No unsaved changes detected. Commit anyway?')) return;
+  if (!anyDirty() && !confirm('No unsaved changes detected. Commit anyway?')) return;
   const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.textContent = 'Saving…';
   try {
-    if (dirty || (!pricesDirty && !jobsDirty)) {
+    if (dirty || !anyDirty()) {
       DB.meta.updated = new Date().toISOString().slice(0,10);
       fileSha = await putJson(c, DATA_PATH, DB, fileSha, `Update vendors (${DB.vendors.length} entries) via tracker UI`);
       dirty = false;
@@ -702,6 +907,10 @@ async function saveToGitHub() {
     if (jobsDirty) {
       jobsSha = await putJson(c, JOBS_PATH, JB, jobsSha, `Update job history (${(JB.jobs || []).length} jobs) via tracker UI`);
       jobsDirty = false;
+    }
+    if (runsDirty) {
+      runsSha = await putJson(c, RUNS_PATH, RN, runsSha, `Update run planner (${(RN.runs || []).length} runs) via tracker UI`);
+      runsDirty = false;
     }
     render();
     toast('Saved to GitHub ✓ (Pages may take ~1 min to reflect changes)');
@@ -774,7 +983,7 @@ function toast(msg, err) {
 document.getElementById('q').addEventListener('input', e => {
   if (document.activeElement === e.target) qUserTyped = true;
 });
-window.addEventListener('beforeunload', e => { if (dirty || pricesDirty || jobsDirty) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (anyDirty()) { e.preventDefault(); e.returnValue = ''; } });
 load();
 </script>
 </body>
