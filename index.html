@@ -42,10 +42,23 @@
   .badge.unknown { background: #eceff1; color: #78909c; }
   .badge.unverified { background: #fdf3d7; color: var(--amber); }
   .badge.closed { background: #fbe4e0; color: var(--red); }
+  .badge.outcome-great { background: #ddeee4; color: var(--green); }
+  .badge.outcome-good { background: #e4ecf7; color: #2c5d8f; }
+  .badge.outcome-issues { background: #fdf3d7; color: var(--amber); }
+  .badge.outcome-bad { background: #fbe4e0; color: var(--red); }
   .card .row { font-size: .82rem; color: var(--muted); display: flex; gap: 6px; align-items: baseline; }
   .card .row b { color: var(--ink); font-weight: 600; min-width: 62px; display: inline-block; }
   .card .brands span, .card .items span { display: inline-block; background: #f0ede5; border-radius: 6px; padding: 2px 7px; font-size: .72rem; margin: 2px 3px 0 0; color: #55503f; }
   .card .notes { font-size: .8rem; color: var(--muted); font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px; }
+  .card .jobs { border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px; }
+  .card .jobs .jobs-head { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+  .job-entry { font-size: .8rem; padding: 5px 0; border-bottom: 1px dashed var(--border); display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+  .job-entry:last-child { border-bottom: none; }
+  .job-entry .job-top { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .job-entry .job-date { color: var(--muted); font-size: .72rem; white-space: nowrap; }
+  .job-entry .job-client { font-weight: 600; }
+  .job-entry .job-items { color: var(--muted); font-size: .78rem; }
+  .job-entry .job-cost { font-weight: 700; color: var(--green); font-size: .78rem; }
   .card .actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
   .stars { color: var(--accent); font-size: .8rem; letter-spacing: 2px; }
   a { color: #2c5d8f; text-decoration: none; }
@@ -182,6 +195,32 @@
   </div>
 </dialog>
 
+<!-- Job history dialog -->
+<dialog id="jobDlg">
+  <div class="dlg-head" id="jobTitle">Log a Job</div>
+  <div class="dlg-body">
+    <div class="form-grid">
+      <div class="full"><label>Vendor *</label><select id="j_vendor"></select></div>
+      <div><label>Client *</label><input id="j_client" placeholder="WNS, ELAC, Pocha…"></div>
+      <div><label>Date</label><input id="j_date" type="date"></div>
+      <div class="full"><label>Items</label><input id="j_items" placeholder="e.g. 72 embroidered unstructured hats, tan"></div>
+      <div><label>Cost</label><input id="j_cost" type="number" step="0.01" min="0" placeholder="$"></div>
+      <div><label>Outcome</label><select id="j_outcome">
+        <option value="great">Great — repeat client</option>
+        <option value="good">Good — satisfied</option>
+        <option value="issues">Had some issues</option>
+        <option value="bad">Bad — avoid</option>
+      </select></div>
+      <div class="full"><label>Notes</label><textarea id="j_notes"></textarea></div>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn danger" id="jobDeleteBtn" onclick="deleteJob()" style="margin-right:auto">Delete</button>
+    <button class="btn ghost" onclick="jobDlg.close()">Cancel</button>
+    <button class="btn primary" onclick="saveJob()">Save Job</button>
+  </div>
+</dialog>
+
 <!-- Settings dialog -->
 <dialog id="settingsDlg">
   <div class="dlg-head">Settings — GitHub connection</div>
@@ -233,14 +272,19 @@
 <script>
 const DATA_PATH = 'data/vendors.json';
 const PRICES_PATH = 'data/prices.json';
+const JOBS_PATH = 'data/jobs.json';
 let DB = { meta: { categories: [] }, vendors: [] };
 let PB = { items: [] };
+let JB = { jobs: [] };
 let fileSha = null;
 let pricesSha = null;
+let jobsSha = null;
 let dirty = false;
 let pricesDirty = false;
+let jobsDirty = false;
 let editingId = null;
 let editingItemId = null;
+let editingJobId = null;
 let view = 'vendors';
 
 // ---------- config ----------
@@ -274,13 +318,13 @@ async function load() {
           const j = await r.json();
           fileSha = j.sha;
           DB = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), ch => ch.charCodeAt(0))));
-          init(); loadPrices(c); return;
+          init(); loadPrices(c); loadJobs(c); return;
         }
       } catch (e) { /* fall through to relative fetch */ }
     }
     const r = await fetch(DATA_PATH + '?t=' + Date.now());
     DB = await r.json();
-    init(); loadPrices(c);
+    init(); loadPrices(c); loadJobs(c);
   } catch (e) {
     document.getElementById('grid').innerHTML = '<div class="empty">Could not load data/vendors.json — if you opened this file directly, run a local server (e.g. <code>python3 -m http.server</code>) or use the GitHub Pages URL.</div>';
   }
@@ -306,6 +350,27 @@ async function loadPrices(c) {
     if (view === 'prices') render();
   } catch (e) { PB = PB && PB.items ? PB : { items: [] }; }
 }
+async function loadJobs(c) {
+  try {
+    if (c && c.owner && c.repo) {
+      const r = await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${JOBS_PATH}?ref=main&t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: c.token ? { Authorization: `Bearer ${c.token}` } : {}
+      });
+      if (r.ok) {
+        const j = await r.json();
+        jobsSha = j.sha;
+        JB = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')), ch => ch.charCodeAt(0))));
+        render();
+        return;
+      }
+      if (r.status === 404) { JB = { jobs: [] }; return; }
+    }
+    const r2 = await fetch(JOBS_PATH + '?t=' + Date.now());
+    JB = r2.ok ? await r2.json() : { jobs: [] };
+    render();
+  } catch (e) { JB = JB && JB.jobs ? JB : { jobs: [] }; }
+}
 function init() {
   const catSel = document.getElementById('fCat'), eCat = document.getElementById('e_category');
   catSel.length = 1; eCat.length = 0;
@@ -325,6 +390,9 @@ function esc(s) { return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;',
 function wsBadge(w) {
   const map = { 'Wholesale only': 'ws-only', 'Wholesale + Retail': 'ws-retail', 'Retail only': 'retail' };
   return `<span class="badge ${map[w] || 'unknown'}">${esc(w || 'Unknown')}</span>`;
+}
+function outcomeLabel(o) {
+  return { great: 'Great', good: 'Good', issues: 'Issues', bad: 'Bad' }[o] || o;
 }
 let qUserTyped = false;
 function render() {
@@ -348,11 +416,13 @@ function render() {
   }).sort((a,b) => fr ? ((b.rating||0) - (a.rating||0) || a.name.localeCompare(b.name)) : a.name.localeCompare(b.name));
 
   document.getElementById('stats').innerHTML =
-    `${list.length} of ${DB.vendors.length} vendors` + (dirty ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
+    `${list.length} of ${DB.vendors.length} vendors` + ((dirty || jobsDirty) ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
 
   const grid = document.getElementById('grid');
   if (!list.length) { grid.innerHTML = '<div class="empty">No vendors match. Add one with “+ Add Vendor”.</div>'; return; }
-  grid.innerHTML = list.map(v => `
+  grid.innerHTML = list.map(v => {
+    const vJobs = (JB.jobs || []).filter(j => j.vendor_id === v.id).sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    return `
     <div class="card">
       <h3>${esc(v.name)}
         <span class="badge cat">${esc(v.category || 'Other')}</span>
@@ -371,11 +441,24 @@ function render() {
       ${(v.brands||[]).length ? `<div class="row brands"><b>Brands</b> <span style="min-width:0">${v.brands.map(b=>`<span>${esc(b)}</span>`).join('')}</span></div>` : ''}
       ${(v.items||[]).length ? `<div class="row items"><b>Items</b> <span style="min-width:0">${v.items.map(i=>`<span>${esc(i)}</span>`).join('')}</span></div>` : ''}
       ${v.notes ? `<div class="notes">${esc(v.notes)}</div>` : ''}
+      ${vJobs.length ? `<div class="jobs">
+        <div class="jobs-head">Job History (${vJobs.length})</div>
+        ${vJobs.map(j => `<div class="job-entry" onclick="openJobEditor('${esc(j.id)}')">
+          <div class="job-top">
+            <span class="job-date">${esc(j.date || '')}</span>
+            <span class="job-client">${esc(j.client || '')}</span>
+            ${j.outcome ? `<span class="badge outcome-${esc(j.outcome)}">${esc(outcomeLabel(j.outcome))}</span>` : ''}
+            ${j.cost != null && j.cost !== '' ? `<span class="job-cost">$${(+j.cost).toFixed(2)}</span>` : ''}
+          </div>
+          ${j.items ? `<div class="job-items">${esc(j.items)}</div>` : ''}
+        </div>`).join('')}
+      </div>` : ''}
       <div class="actions">
         <button class="btn ghost small" onclick="openEditor('${esc(v.id)}')">Edit</button>
+        <button class="btn ghost small" onclick="openJobEditor(null, '${esc(v.id)}')">+ Log Job</button>
         ${v.last_verified ? `<span style="margin-left:auto;font-size:.7rem;color:var(--muted)">verified ${esc(v.last_verified)}</span>` : ''}
       </div>
-    </div>`).join('');
+    </div>`; }).join('');
 }
 
 // ---------- price book ----------
@@ -395,7 +478,7 @@ function renderPrices(q) {
   const items = all.filter(it => !q || [it.item, it.brand, it.style, it.notes].join(' ').toLowerCase().includes(q))
     .sort((a,b) => a.item.localeCompare(b.item));
   document.getElementById('stats').innerHTML =
-    `${items.length} of ${all.length} price book items` + ((dirty || pricesDirty) ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
+    `${items.length} of ${all.length} price book items` + ((dirty || pricesDirty || jobsDirty) ? ' — <span class="dirty">unsaved changes (hit Save Changes)</span>' : '');
   const el = document.getElementById('pbook');
   if (!items.length) { el.innerHTML = '<div class="empty">No items match. Click “+ Add Item” to add blanks you buy and who sells them cheapest.</div>'; return; }
   el.innerHTML = items.map(it => {
@@ -487,6 +570,50 @@ function deleteItem() {
   toast('Item removed — click "Save Changes" to commit');
 }
 
+// ---------- job history ----------
+function openJobEditor(id, vendorId) {
+  editingJobId = id || null;
+  const j = id ? JB.jobs.find(x => x.id === id) : {};
+  document.getElementById('jobTitle').textContent = id ? `Edit Job — ${j.client || ''}` : 'Log a Job';
+  document.getElementById('jobDeleteBtn').style.display = id ? '' : 'none';
+  const vSel = document.getElementById('j_vendor');
+  vSel.innerHTML = DB.vendors.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(v => `<option value="${esc(v.id)}">${esc(v.name)}</option>`).join('');
+  vSel.value = (j && j.vendor_id) || vendorId || (DB.vendors[0] && DB.vendors[0].id) || '';
+  document.getElementById('j_client').value = j.client || '';
+  document.getElementById('j_date').value = j.date || '';
+  document.getElementById('j_items').value = j.items || '';
+  document.getElementById('j_cost').value = j.cost ?? '';
+  document.getElementById('j_outcome').value = j.outcome || 'good';
+  document.getElementById('j_notes').value = j.notes || '';
+  jobDlg.showModal();
+}
+function saveJob() {
+  const client = document.getElementById('j_client').value.trim();
+  if (!client) { toast('Client is required', true); return; }
+  let j = editingJobId ? JB.jobs.find(x => x.id === editingJobId) : null;
+  if (!j) {
+    j = { id: 'job-' + Date.now() };
+    JB.jobs.push(j);
+  }
+  j.vendor_id = document.getElementById('j_vendor').value;
+  j.client = client;
+  j.date = document.getElementById('j_date').value;
+  j.items = document.getElementById('j_items').value.trim();
+  const cost = parseFloat(document.getElementById('j_cost').value);
+  j.cost = isNaN(cost) ? null : cost;
+  j.outcome = document.getElementById('j_outcome').value;
+  j.notes = document.getElementById('j_notes').value.trim();
+  jobsDirty = true; jobDlg.close(); render();
+  toast('Job saved locally — click "Save Changes" to commit to GitHub');
+}
+function deleteJob() {
+  const j = JB.jobs.find(x => x.id === editingJobId);
+  if (!j || !confirm(`Delete this job for "${j.client}"?`)) return;
+  JB.jobs = JB.jobs.filter(x => x.id !== editingJobId);
+  jobsDirty = true; jobDlg.close(); render();
+  toast('Job removed — click "Save Changes" to commit');
+}
+
 // ---------- editor ----------
 const F = ['name','address','neighborhood','phone','email','website','instagram','contact_person','min_order','hours','price_notes','parking_notes','notes','last_verified'];
 function openEditor(id) {
@@ -560,10 +687,10 @@ async function putJson(c, path, obj, knownSha, message) {
 async function saveToGitHub() {
   const c = cfg();
   if (!c.token || !c.owner || !c.repo) { openSettings(); toast('Add your GitHub token in Settings first', true); return; }
-  if (!dirty && !pricesDirty && !confirm('No unsaved changes detected. Commit anyway?')) return;
+  if (!dirty && !pricesDirty && !jobsDirty && !confirm('No unsaved changes detected. Commit anyway?')) return;
   const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.textContent = 'Saving…';
   try {
-    if (dirty || !pricesDirty) {
+    if (dirty || (!pricesDirty && !jobsDirty)) {
       DB.meta.updated = new Date().toISOString().slice(0,10);
       fileSha = await putJson(c, DATA_PATH, DB, fileSha, `Update vendors (${DB.vendors.length} entries) via tracker UI`);
       dirty = false;
@@ -571,6 +698,10 @@ async function saveToGitHub() {
     if (pricesDirty) {
       pricesSha = await putJson(c, PRICES_PATH, PB, pricesSha, `Update price book (${(PB.items || []).length} items) via tracker UI`);
       pricesDirty = false;
+    }
+    if (jobsDirty) {
+      jobsSha = await putJson(c, JOBS_PATH, JB, jobsSha, `Update job history (${(JB.jobs || []).length} jobs) via tracker UI`);
+      jobsDirty = false;
     }
     render();
     toast('Saved to GitHub ✓ (Pages may take ~1 min to reflect changes)');
@@ -643,7 +774,7 @@ function toast(msg, err) {
 document.getElementById('q').addEventListener('input', e => {
   if (document.activeElement === e.target) qUserTyped = true;
 });
-window.addEventListener('beforeunload', e => { if (dirty || pricesDirty) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (dirty || pricesDirty || jobsDirty) { e.preventDefault(); e.returnValue = ''; } });
 load();
 </script>
 </body>
