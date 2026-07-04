@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    {
+      "id": "job-1",
+      "vendor_id": "vision-stitch",
+      "client": "Arbonne",
+      "date": "2025-11-01",
+      "items": "72 embroidered unstructured hats, tan with Arbonne logo",
+      "cost": null,
+      "outcome": "great",
+      "notes": "Repeat client — great result."
+    }
+  ]
+}
