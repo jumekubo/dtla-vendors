@@ -1,0 +1,208 @@
+{
+  "items": [
+    {
+      "id": "gildan-5000-tee",
+      "item": "Gildan Heavy Cotton T-Shirt",
+      "brand": "Gildan",
+      "style": "5000",
+      "notes": "Price range across colors/sizes on One Stop's site.",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 4.0,
+          "price_high": 11.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "gildan-18000-crewneck",
+      "item": "Gildan Heavy Blend Crewneck Sweatshirt",
+      "brand": "Gildan",
+      "style": "18000",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 10.0,
+          "price_high": 15.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "gildan-18500-hoodie",
+      "item": "Gildan Heavy Blend Hooded Sweatshirt",
+      "brand": "Gildan",
+      "style": "18500",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 13.0,
+          "price_high": 16.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "gildan-18600-zip-hoodie",
+      "item": "Gildan Heavy Blend Full-Zip Hooded Sweatshirt",
+      "brand": "Gildan",
+      "style": "18600",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 17.0,
+          "price_high": 22.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "gildan-sf000-crewneck",
+      "item": "Gildan Softstyle Midweight Crewneck",
+      "brand": "Gildan",
+      "style": "SF000",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 13.0,
+          "price_high": 15.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "comfort-colors-1717-tee",
+      "item": "Comfort Colors Garment-Dyed Heavyweight Tee",
+      "brand": "Comfort Colors",
+      "style": "1717",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 9.0,
+          "price_high": 12.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "bella-canvas-3001-tee",
+      "item": "Bella+Canvas Jersey Tee",
+      "brand": "Bella+Canvas",
+      "style": "3001",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 6.0,
+          "price_high": 8.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "suna-720-tee",
+      "item": "Suna Adult T-Shirt",
+      "brand": "Suna",
+      "style": "720",
+      "notes": "Budget blank.",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 3.0,
+          "price_high": 7.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "three-layer-5108-hoodie",
+      "item": "Three Layer Premium Pullover Hoodie",
+      "brand": "Three Layer",
+      "style": "5108",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 10.0,
+          "price_high": 14.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "three-layer-8801-joggers",
+      "item": "Three Layer Fleece Joggers",
+      "brand": "Three Layer",
+      "style": "8801",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 11.0,
+          "price_high": 12.0,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "qtees-q435-apron",
+      "item": "Q-Tees Full Length Apron with Pockets",
+      "brand": "Q-Tees",
+      "style": "Q435",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 7.0,
+          "price_high": null,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    },
+    {
+      "id": "canvas-tote-tg200",
+      "item": "Premium Promotional Canvas Tote Bag",
+      "brand": "",
+      "style": "TG200",
+      "notes": "",
+      "prices": [
+        {
+          "vendor_id": "one-stop-t-shirt-warehouse",
+          "price": 5.0,
+          "price_high": null,
+          "min_qty": "",
+          "updated": "2026-07-03"
+        }
+      ],
+      "updated": "2026-07-03"
+    }
+  ]
+}
