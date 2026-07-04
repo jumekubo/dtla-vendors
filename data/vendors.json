@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-07-03",
+    "updated": "2026-07-04",
     "categories": [
       "Blank Apparel",
       "Caps & Hats",
@@ -1562,7 +1562,7 @@
       "instagram": "",
       "contact_person": "",
       "wholesale": "Wholesale + Retail",
-      "resale_permit_required": false,
+      "resale_permit_required": true,
       "min_order": "",
       "brands": [
         "Siser",
@@ -1577,7 +1577,7 @@
       "hours": "Mon-Fri 8:30am-4pm, Sat 8:30am-12pm",
       "price_notes": "",
       "parking_notes": "",
-      "rating": 0,
+      "rating": 5,
       "tags": [
         "Siser HTV",
         "same-day pickup"
@@ -1585,7 +1585,8 @@
       "notes": "Key local source for Siser vinyl (Romeo cutter) and heat transfer supplies. Also Chatsworth, Anaheim, San Diego locations.",
       "status": "active",
       "last_verified": "2026-07-02",
-      "added": "2026-07-02"
+      "added": "2026-07-02",
+      "updated": "2026-07-04"
     },
     {
       "id": "chavez-embroidery",
